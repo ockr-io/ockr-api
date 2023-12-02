@@ -19,7 +19,5 @@ jobs:
         with:
           release-as: 0.1.0
           release-type: simple
-          extra-files: |
-            pom.xml
           bump-minor-pre-major: true
           bump-patch-for-minor-pre-major: true
