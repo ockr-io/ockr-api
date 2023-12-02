@@ -17,6 +17,7 @@ jobs:
       - name: 🚀 release-please-action
         uses: google-github-actions/release-please-action@v3
         with:
+          release-as: 0.1.0
           release-type: simple
           extra-files: |
             pom.xml
