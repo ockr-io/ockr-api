@@ -4,22 +4,20 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-<span class="nc" id="L14">@Setter</span>
-<span class="fc" id="L15">@NoArgsConstructor</span>
-<span class="fc" id="L16">@AllArgsConstructor</span>
+<span class="nc" id="L11">@Setter</span>
+<span class="fc" id="L12">@NoArgsConstructor</span>
+<span class="fc" id="L13">@AllArgsConstructor</span>
 @Table(name = &quot;model&quot;)
+<span class="nc" id="L15">@Builder</span>
 public class Model {
     @Id
     @Column(unique = true)
-<span class="fc" id="L21">    private String name;</span>
-<span class="fc" id="L22">    private String url;</span>
-<span class="nc" id="L23">    private Integer port;</span>
+<span class="fc" id="L19">    private String name;</span>
+<span class="fc" id="L20">    private String url;</span>
+<span class="fc" id="L21">    private Integer port;</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
