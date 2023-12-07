@@ -1,16 +1,23 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Ockr API,io.ockr.ecosystem.algorithm,DefaultPuzzleAlgorithm,0,226,0,12,0,46,0,13,0,7
+Ockr API,io.ockr.ecosystem.algorithm,ParameterType,0,27,0,0,0,2,0,1,0,1
+Ockr API,io.ockr.ecosystem.algorithm,Parameter,26,34,0,0,3,6,7,6,7,6
+Ockr API,io.ockr.ecosystem.algorithm,Parameter.ParameterBuilder,12,42,0,0,0,1,1,7,1,7
+Ockr API,io.ockr.ecosystem.algorithm,Algorithm,38,46,7,5,8,11,6,5,1,4
 Ockr API,io.ockr.ecosystem.entity.api,InferenceResponse.InferenceResponseBuilder,6,21,0,0,0,1,1,4,1,4
 Ockr API,io.ockr.ecosystem.entity.api,InferenceResponse,0,30,0,0,0,6,0,7,0,7
 Ockr API,io.ockr.ecosystem.entity.api,InferenceRequestBody,23,0,0,0,4,0,5,0,5,0
 Ockr API,io.ockr.ecosystem.entity.api,ModelRequestBody,33,0,0,0,5,0,7,0,7,0
 Ockr API,io.ockr.ecosystem,OckrApiApplication,5,3,0,0,2,1,1,1,1,1
-Ockr API,io.ockr.ecosystem,Algorithm,21,0,0,0,6,0,3,0,3,0
 Ockr API,io.ockr.ecosystem.service,ModelService,10,91,1,1,5,25,2,7,1,7
-Ockr API,io.ockr.ecosystem.service,PdfService,0,56,0,2,0,14,0,4,0,3
+Ockr API,io.ockr.ecosystem.service,PdfService,8,60,0,2,2,15,1,5,1,4
 Ockr API,io.ockr.ecosystem.controller,ModelController,56,3,2,0,17,1,4,1,3,1
-Ockr API,io.ockr.ecosystem.controller,PdfController,3,0,0,0,1,0,1,0,1,0
+Ockr API,io.ockr.ecosystem.controller,PdfController,46,3,6,0,11,1,4,1,1,1
+Ockr API,io.ockr.ecosystem.enums,Algorithm,21,0,0,0,6,0,3,0,3,0
 Ockr API,io.ockr.ecosystem.format.pdf,PDFTextPositionStripper,0,112,0,0,0,23,0,5,0,5
 Ockr API,io.ockr.ecosystem.entity,TextPosition.TextPositionBuilder,14,49,0,0,0,1,1,8,1,8
 Ockr API,io.ockr.ecosystem.entity,TextPosition,0,70,0,0,0,10,0,15,0,15
+Ockr API,io.ockr.ecosystem.entity,HashResult.HashResultBuilder,10,35,0,0,0,1,1,6,1,6
 Ockr API,io.ockr.ecosystem.entity,Model,16,24,0,0,2,5,4,5,4,5
+Ockr API,io.ockr.ecosystem.entity,HashResult,9,197,1,7,3,39,4,13,3,10
 Ockr API,io.ockr.ecosystem.entity,Model.ModelBuilder,36,0,0,0,1,0,6,0,6,0

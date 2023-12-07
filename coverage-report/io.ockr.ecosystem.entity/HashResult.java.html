@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HashResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.entity</a> &gt; <span class="el_source">HashResult.java</span></div><h1>HashResult.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.entity;
+
+import io.ockr.ecosystem.algorithm.Parameter;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+<span class="fc" id="L10">@Setter</span>
+<span class="fc" id="L11">@AllArgsConstructor</span>
+<span class="fc" id="L12">@NoArgsConstructor</span>
+<span class="pc" id="L13">@Builder</span>
+public class HashResult {
+<span class="nc" id="L15">    private String hash;</span>
+<span class="nc" id="L16">    private List&lt;String&gt; subHashes;</span>
+<span class="nc" id="L17">    private String algorithm;</span>
+<span class="fc" id="L18">    private List&lt;Parameter&gt; parameters;</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L22">        StringBuilder content = new StringBuilder(hash + &quot;|&quot;);</span>
+
+<span class="fc" id="L24">        content.append(subHashes.size()).append(&quot;|&quot;);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (String subHash : subHashes) {</span>
+<span class="fc" id="L26">            content.append(subHash).append(&quot;|&quot;);</span>
+<span class="fc" id="L27">        }</span>
+
+<span class="fc" id="L29">        content.append(algorithm).append(&quot;|&quot;);</span>
+
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        for (Parameter parameter : parameters) {</span>
+<span class="fc" id="L32">            content.append(parameter.getName()).append(&quot;|&quot;);</span>
+<span class="fc" id="L33">            String value = parameter.getValue();</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">            if (value == null) {</span>
+<span class="fc" id="L35">                value = parameter.getDefaultValue();</span>
+            }
+<span class="fc" id="L37">            content.append(value).append(&quot;|&quot;);</span>
+<span class="fc" id="L38">        }</span>
+
+<span class="fc" id="L40">        return content.toString();</span>
+    }
+
+    public static HashResult fromString(String text) {
+<span class="fc" id="L44">        String[] parts = text.split(&quot;\\|&quot;);</span>
+<span class="fc" id="L45">        String hash = parts[0];</span>
+
+<span class="fc" id="L47">        int subHashCount = Integer.parseInt(parts[1]);</span>
+<span class="fc" id="L48">        List&lt;String&gt; subHashes = List.of(parts).subList(2, 2 + subHashCount);</span>
+
+<span class="fc" id="L50">        String algorithm = parts[2 + subHashCount];</span>
+
+<span class="fc" id="L52">        List&lt;String&gt; parameterText = List.of(parts).subList(3 + subHashCount, parts.length);</span>
+<span class="fc" id="L53">        List&lt;Parameter&gt; parameters = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int i = 0; i &lt; parameterText.size(); i += 2) {</span>
+<span class="fc" id="L56">            String parameterName = parameterText.get(i);</span>
+<span class="fc" id="L57">            String parameterValue = parameterText.get(i + 1);</span>
+<span class="fc" id="L58">            parameters.add(Parameter.builder()</span>
+<span class="fc" id="L59">                    .name(parameterName)</span>
+<span class="fc" id="L60">                    .value(parameterValue)</span>
+<span class="fc" id="L61">                    .build());</span>
+        }
+
+<span class="fc" id="L64">        return HashResult.builder()</span>
+<span class="fc" id="L65">                .hash(hash)</span>
+<span class="fc" id="L66">                .subHashes(subHashes)</span>
+<span class="fc" id="L67">                .algorithm(algorithm)</span>
+<span class="fc" id="L68">                .parameters(parameters)</span>
+<span class="fc" id="L69">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

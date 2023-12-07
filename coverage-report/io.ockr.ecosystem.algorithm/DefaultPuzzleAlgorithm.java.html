@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultPuzzleAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.algorithm</a> &gt; <span class="el_source">DefaultPuzzleAlgorithm.java</span></div><h1>DefaultPuzzleAlgorithm.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.algorithm;
+
+import io.ockr.ecosystem.entity.HashResult;
+import io.ockr.ecosystem.entity.TextPosition;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DefaultPuzzleAlgorithm extends Algorithm {
+
+    public DefaultPuzzleAlgorithm() {
+<span class="fc" id="L13">        super(&quot;default-puzzle&quot;);</span>
+<span class="fc" id="L14">        Parameter xSlice = Parameter.builder()</span>
+<span class="fc" id="L15">                .name(&quot;xSlice&quot;)</span>
+<span class="fc" id="L16">                .type(ParameterType.INTEGER)</span>
+<span class="fc" id="L17">                .description(&quot;The number of slices in the x direction&quot;)</span>
+<span class="fc" id="L18">                .defaultValue(&quot;3&quot;)</span>
+<span class="fc" id="L19">                .build();</span>
+<span class="fc" id="L20">        Parameter ySlice = Parameter.builder()</span>
+<span class="fc" id="L21">                .name(&quot;ySlice&quot;)</span>
+<span class="fc" id="L22">                .type(ParameterType.INTEGER)</span>
+<span class="fc" id="L23">                .description(&quot;The number of slices in the y direction&quot;)</span>
+<span class="fc" id="L24">                .defaultValue(&quot;3&quot;)</span>
+<span class="fc" id="L25">                .build();</span>
+<span class="fc" id="L26">        this.parameters.addAll(List.of(xSlice, ySlice));</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public HashResult compute(List&lt;TextPosition&gt; textPositions) {
+<span class="fc" id="L31">        int sliceX = getIntegerParameter(&quot;xSlice&quot;);</span>
+<span class="fc" id="L32">        int sliceY = getIntegerParameter(&quot;ySlice&quot;);</span>
+<span class="fc" id="L33">        double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);</span>
+<span class="fc" id="L34">        double maxX = textPositions.stream().mapToDouble(TextPosition::getX).max().orElse(0);</span>
+<span class="fc" id="L35">        double minY = textPositions.stream().mapToDouble(TextPosition::getY).min().orElse(0);</span>
+<span class="fc" id="L36">        double maxY = textPositions.stream().mapToDouble(TextPosition::getY).max().orElse(0);</span>
+<span class="fc" id="L37">        double areaWidth = maxX - minX;</span>
+<span class="fc" id="L38">        double areaHeight = maxY - minY;</span>
+<span class="fc" id="L39">        double sliceWidth = areaWidth / sliceX;</span>
+<span class="fc" id="L40">        double sliceHeight = areaHeight / sliceY;</span>
+
+<span class="fc" id="L42">        HashResult result = new HashResult();</span>
+<span class="fc" id="L43">        result.setAlgorithm(this.getName());</span>
+<span class="fc" id="L44">        result.setParameters(this.getParameters());</span>
+<span class="fc" id="L45">        String text = textPositions.stream()</span>
+<span class="fc" id="L46">                .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L47">        result.setHash(this.hash(text));</span>
+
+<span class="fc" id="L49">        List&lt;String&gt; subHashes = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int i = 0; i &lt; sliceX; i++) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            for (int j =0; j &lt; sliceY; j++) {</span>
+<span class="fc" id="L53">                double puzzlePositionX = i * sliceWidth;</span>
+<span class="fc" id="L54">                double puzzlePositionY = j * sliceHeight;</span>
+<span class="fc" id="L55">                List&lt;TextPosition&gt; textUnderPuzzleArea = textPositions.stream()</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePositionX &amp;&amp; textPosition.getX() &lt;= puzzlePositionX + sliceWidth)</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getY() &gt;= puzzlePositionY &amp;&amp; textPosition.getY() &lt;= puzzlePositionY + sliceHeight)</span>
+<span class="fc" id="L58">                        .toList();</span>
+<span class="fc" id="L59">                String puzzleText = textUnderPuzzleArea.stream()</span>
+<span class="fc" id="L60">                        .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L61">                subHashes.add(this.hash(puzzleText));</span>
+            }
+        }
+
+<span class="fc" id="L65">        result.setSubHashes(subHashes);</span>
+<span class="fc" id="L66">        return result;</span>
+    }
+
+    @Override
+    public String hash(String text) {
+<span class="fc" id="L71">        return DigestUtils.sha256Hex(text);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
