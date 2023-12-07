@@ -1,4 +1,4 @@
-package io.ockr.ecosystem;
+package io.ockr.ecosystem.enums;
 
 import lombok.Getter;
 

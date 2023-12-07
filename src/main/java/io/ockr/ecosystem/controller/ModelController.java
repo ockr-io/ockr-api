@@ -1,24 +1,18 @@
 package io.ockr.ecosystem.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.*;
 import io.ockr.ecosystem.entity.Model;
 import io.ockr.ecosystem.entity.api.InferenceRequestBody;
 import io.ockr.ecosystem.entity.api.InferenceResponse;
 import io.ockr.ecosystem.entity.api.ModelRequestBody;
 import io.ockr.ecosystem.service.ModelService;
-import org.jooq.tools.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController

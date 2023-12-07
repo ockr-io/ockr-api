@@ -6,6 +6,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
@@ -13,14 +14,25 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PdfService {
 
+    public List<TextPosition> extractTextPositions(InputStream inputStream) throws IOException {
+        PDDocument document = Loader.loadPDF(inputStream.readAllBytes());
+        return extractTextPositions(document);
+    }
+
     public List<TextPosition> extractTextPositions(File file) throws IOException {
         PDDocument document = Loader.loadPDF(file);
+        return extractTextPositions(document);
+    }
+
+    public List<TextPosition> extractTextPositions(PDDocument document) throws IOException {
+
         List<TextPosition> textPositions = new ArrayList<>();
 
         for (int page = 1; page < document.getNumberOfPages() + 1; page++) {
