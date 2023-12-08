@@ -10,8 +10,8 @@
 
     <groupId>io.ockr.ecosystem</groupId>
 
-    <artifactId>api</artifactId>
-    <version>0.0.1</version>
+    <artifactId>ockr-api</artifactId>
+    <version>0.1.1</version>
 
     <name>Ockr API</name>
     <description>The Ockr API is the main interface to interact with the Ockr ecosystem</description>
