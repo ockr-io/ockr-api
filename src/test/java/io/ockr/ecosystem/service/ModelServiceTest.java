@@ -7,6 +7,7 @@ import io.ockr.ecosystem.entity.Model;
 import io.ockr.ecosystem.entity.TextPosition;
 import io.ockr.ecosystem.entity.api.InferenceResponse;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,10 +28,11 @@ public class ModelServiceTest {
 
     @Autowired
     private ModelService modelService;
+    private WireMockServer wireMockServer;
 
     @BeforeAll
     public void setup() throws JsonProcessingException {
-        WireMockServer wireMockServer = new WireMockServer(5001);
+        wireMockServer = new WireMockServer(5001);
         wireMockServer.start();
 
         InferenceResponse inferenceResponse = InferenceResponse.builder()
@@ -71,6 +73,12 @@ public class ModelServiceTest {
                 )
         );
         modelService.saveAll(models);
+    }
+
+    @AfterAll
+    public void teardown() {
+        modelService.deleteAllModels();
+        wireMockServer.stop();
     }
 
     @Test

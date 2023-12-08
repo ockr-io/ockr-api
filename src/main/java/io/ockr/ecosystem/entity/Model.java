@@ -1,9 +1,6 @@
 package io.ockr.ecosystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -15,8 +12,16 @@ import lombok.*;
 @Builder
 public class Model {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     @Column(unique = true)
     private String name;
     private String url;
     private Integer port;
+
+    public Model(String name, String url, Integer port) {
+        this.name = name;
+        this.url = url;
+        this.port = port;
+    }
 }

@@ -7,10 +7,8 @@ import io.ockr.ecosystem.entity.api.ModelRequestBody;
 import io.ockr.ecosystem.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -29,18 +27,23 @@ public class ModelController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerModel(ModelRequestBody requestBody) {
+    public ResponseEntity<?> registerModel(@RequestBody ModelRequestBody requestBody) {
         Model model = Model.builder()
                 .name(requestBody.getName())
                 .url(requestBody.getUrl())
                 .port(requestBody.getPort())
                 .build();
-        modelService.saveModel(model);
+        try {
+            modelService.saveModel(model);
+        } catch (org.springframework.dao.DataIntegrityViolationException exception) {
+            return ResponseEntity.status(400).body("Model already exists");
+        }
+
         return ResponseEntity.status(200).build();
     }
 
     @PostMapping("/inference")
-    public ResponseEntity<?> inference(InferenceRequestBody requestBody) {
+    public ResponseEntity<?> inference(@RequestBody InferenceRequestBody requestBody) {
         InferenceResponse inferenceResponse;
 
         try {

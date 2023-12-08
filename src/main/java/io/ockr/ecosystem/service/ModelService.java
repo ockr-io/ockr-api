@@ -58,7 +58,7 @@ public class ModelService {
     }
 
     public Model getModelByName(String name) {
-        return modelRepository.findById(name).orElse(null);
+        return modelRepository.findByName(name).orElse(null);
     }
 
     public void saveModel(Model model) {
