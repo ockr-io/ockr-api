@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Model.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.entity</a> &gt; <span class="el_source">Model.java</span></div><h1>Model.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
-<span class="nc" id="L11">@Setter</span>
-<span class="fc" id="L12">@NoArgsConstructor</span>
-<span class="fc" id="L13">@AllArgsConstructor</span>
+<span class="nc" id="L8">@Setter</span>
+<span class="fc" id="L9">@NoArgsConstructor</span>
+<span class="fc" id="L10">@AllArgsConstructor</span>
 @Table(name = &quot;model&quot;)
-<span class="nc" id="L15">@Builder</span>
+<span class="pc" id="L12">@Builder</span>
 public class Model {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L16">    private long id;</span>
     @Column(unique = true)
-<span class="fc" id="L19">    private String name;</span>
-<span class="fc" id="L20">    private String url;</span>
-<span class="fc" id="L21">    private Integer port;</span>
+<span class="fc" id="L18">    private String name;</span>
+<span class="fc" id="L19">    private String url;</span>
+<span class="fc" id="L20">    private Integer port;</span>
+
+<span class="fc" id="L22">    public Model(String name, String url, Integer port) {</span>
+<span class="fc" id="L23">        this.name = name;</span>
+<span class="fc" id="L24">        this.url = url;</span>
+<span class="fc" id="L25">        this.port = port;</span>
+<span class="fc" id="L26">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

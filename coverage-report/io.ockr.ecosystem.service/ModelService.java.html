@@ -58,7 +58,7 @@ public class ModelService {
     }
 
     public Model getModelByName(String name) {
-<span class="fc" id="L61">        return modelRepository.findById(name).orElse(null);</span>
+<span class="fc" id="L61">        return modelRepository.findByName(name).orElse(null);</span>
     }
 
     public void saveModel(Model model) {
