@@ -2,6 +2,8 @@ package io.ockr.ecosystem.algorithm;
 
 import io.ockr.ecosystem.entity.HashResult;
 import io.ockr.ecosystem.entity.TextPosition;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,8 @@ public abstract class Algorithm {
         throw new IllegalArgumentException("Parameter " + name + " does not exist");
     }
 
-    public abstract HashResult compute(List<TextPosition> textPositions);
-    public abstract String hash(String text);
+    public abstract HashResult compute(List<TextPosition> textPositions, String base64Image);
+    public String hash(String text) {
+        return DigestUtils.sha256Hex(text);
+    }
 }

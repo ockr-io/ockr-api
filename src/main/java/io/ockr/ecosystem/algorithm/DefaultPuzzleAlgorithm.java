@@ -2,8 +2,6 @@ package io.ockr.ecosystem.algorithm;
 
 import io.ockr.ecosystem.entity.HashResult;
 import io.ockr.ecosystem.entity.TextPosition;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
     }
 
     @Override
-    public HashResult compute(List<TextPosition> textPositions) {
+    public HashResult compute(List<TextPosition> textPositions, String base64Image) {
         int sliceX = getIntegerParameter("xSlice");
         int sliceY = getIntegerParameter("ySlice");
         double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);
@@ -64,10 +62,5 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
 
         result.setSubHashes(subHashes);
         return result;
-    }
-
-    @Override
-    public String hash(String text) {
-        return DigestUtils.sha256Hex(text);
     }
 }
