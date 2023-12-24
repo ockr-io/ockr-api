@@ -28,7 +28,7 @@ public class DefaultPuzzleAlgorithmTest {
         List<TextPosition> textPositions = pdfService.extractTextPositions(file);
 
         DefaultPuzzleAlgorithm defaultPuzzleAlgorithm = new DefaultPuzzleAlgorithm();
-        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions);
+        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions, null);
 
         Assertions.assertEquals(2, hashResult.getParameters().size());
 

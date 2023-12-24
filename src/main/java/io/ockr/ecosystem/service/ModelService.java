@@ -26,19 +26,30 @@ public class ModelService {
         this.client = new OkHttpClient();
     }
 
-    public InferenceResponse inference(String modelName, String base64Image) throws IOException {
+    public InferenceResponse inference(String modelName, String base64Image, String modelVersion,
+                                       Map<String, Object> parameters) throws IOException {
         Model model = this.getModelByName(modelName);
 
         if (model == null) {
             return null;
         }
 
-        Map<String, String> jsonObject = new HashMap<>();
+        return this.inference(model, base64Image, modelVersion, parameters);
+    }
 
-        try {
-            jsonObject.put("base64Image", base64Image);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public InferenceResponse inference(Model model, String base64Image, String modelVersion,
+                                       Map<String, Object> parameters) throws IOException {
+        Map<String, Object> jsonObject = new HashMap<>();
+
+        if (parameters != null) {
+            jsonObject.put("parameters", parameters);
+        }
+
+        jsonObject.put("base64_image", base64Image);
+        jsonObject.put("ocr_model_name", model.getName());
+
+        if (modelVersion != null) {
+            jsonObject.put("ocr_model_version", modelVersion);
         }
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");

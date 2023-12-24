@@ -47,7 +47,7 @@ public class ModelController {
         InferenceResponse inferenceResponse;
 
         try {
-            inferenceResponse = modelService.inference(requestBody.getModel(), requestBody.getBase64Image());
+            inferenceResponse = modelService.inference(requestBody.getModelName(), requestBody.getModelVersion(), requestBody.getBase64Image(), requestBody.getParameters());
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
