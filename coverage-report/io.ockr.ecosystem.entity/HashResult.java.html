@@ -13,60 +13,57 @@ import java.util.List;
 <span class="pc" id="L13">@Builder</span>
 public class HashResult {
 <span class="nc" id="L15">    private String hash;</span>
-<span class="nc" id="L16">    private List&lt;String&gt; subHashes;</span>
-<span class="nc" id="L17">    private String algorithm;</span>
-<span class="fc" id="L18">    private List&lt;Parameter&gt; parameters;</span>
+<span class="nc" id="L16">    private String algorithm;</span>
+<span class="fc" id="L17">    private List&lt;Parameter&gt; parameters;</span>
+
+<span class="nc" id="L19">    private List&lt;PuzzlePiece&gt; puzzlePieces;</span>
 
     @Override
     public String toString() {
-<span class="fc" id="L22">        StringBuilder content = new StringBuilder(hash + &quot;|&quot;);</span>
+<span class="fc" id="L23">        StringBuilder content = new StringBuilder(hash + &quot;|&quot;);</span>
+<span class="fc" id="L24">        content.append(algorithm).append(&quot;|&quot;);</span>
 
-<span class="fc" id="L24">        content.append(subHashes.size()).append(&quot;|&quot;);</span>
-<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (String subHash : subHashes) {</span>
-<span class="fc" id="L26">            content.append(subHash).append(&quot;|&quot;);</span>
-<span class="fc" id="L27">        }</span>
-
-<span class="fc" id="L29">        content.append(algorithm).append(&quot;|&quot;);</span>
-
-<span class="fc bfc" id="L31" title="All 2 branches covered.">        for (Parameter parameter : parameters) {</span>
-<span class="fc" id="L32">            content.append(parameter.getName()).append(&quot;|&quot;);</span>
-<span class="fc" id="L33">            String value = parameter.getValue();</span>
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">            if (value == null) {</span>
-<span class="fc" id="L35">                value = parameter.getDefaultValue();</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (Parameter parameter : parameters) {</span>
+<span class="fc" id="L27">            content.append(parameter.getName()).append(&quot;$&quot;);</span>
+<span class="fc" id="L28">            String value = parameter.getValue();</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">            if (value == null) {</span>
+<span class="fc" id="L30">                value = parameter.getDefaultValue();</span>
             }
-<span class="fc" id="L37">            content.append(value).append(&quot;|&quot;);</span>
-<span class="fc" id="L38">        }</span>
+<span class="fc" id="L32">            content.append(value).append(&quot;$&quot;);</span>
+<span class="fc" id="L33">        }</span>
 
-<span class="fc" id="L40">        return content.toString();</span>
+<span class="fc" id="L35">        content.append(&quot;|&quot;);</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
+<span class="fc" id="L38">            content.append(puzzlePiece.toString()).append(&quot;&amp;&quot;);</span>
+<span class="fc" id="L39">        }</span>
+
+<span class="fc" id="L41">        return content.toString();</span>
     }
 
     public static HashResult fromString(String text) {
-<span class="fc" id="L44">        String[] parts = text.split(&quot;\\|&quot;);</span>
-<span class="fc" id="L45">        String hash = parts[0];</span>
-
-<span class="fc" id="L47">        int subHashCount = Integer.parseInt(parts[1]);</span>
-<span class="fc" id="L48">        List&lt;String&gt; subHashes = List.of(parts).subList(2, 2 + subHashCount);</span>
-
-<span class="fc" id="L50">        String algorithm = parts[2 + subHashCount];</span>
-
-<span class="fc" id="L52">        List&lt;String&gt; parameterText = List.of(parts).subList(3 + subHashCount, parts.length);</span>
-<span class="fc" id="L53">        List&lt;Parameter&gt; parameters = new ArrayList&lt;&gt;();</span>
-
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int i = 0; i &lt; parameterText.size(); i += 2) {</span>
-<span class="fc" id="L56">            String parameterName = parameterText.get(i);</span>
-<span class="fc" id="L57">            String parameterValue = parameterText.get(i + 1);</span>
-<span class="fc" id="L58">            parameters.add(Parameter.builder()</span>
-<span class="fc" id="L59">                    .name(parameterName)</span>
-<span class="fc" id="L60">                    .value(parameterValue)</span>
-<span class="fc" id="L61">                    .build());</span>
+<span class="fc" id="L45">        String[] parts = text.split(&quot;\\|&quot;);</span>
+<span class="fc" id="L46">        String hash = parts[0];</span>
+<span class="fc" id="L47">        String algorithm = parts[1];</span>
+<span class="fc" id="L48">        String[] parameters = parts[2].split(&quot;\\$&quot;);</span>
+<span class="fc" id="L49">        List&lt;Parameter&gt; parameterList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        for (int i = 0; i &lt; parameters.length; i += 2) {</span>
+<span class="fc" id="L51">            parameterList.add(Parameter.builder()</span>
+<span class="fc" id="L52">                    .name(parameters[i])</span>
+<span class="fc" id="L53">                    .value(parameters[i + 1])</span>
+<span class="fc" id="L54">                    .build());</span>
         }
-
-<span class="fc" id="L64">        return HashResult.builder()</span>
-<span class="fc" id="L65">                .hash(hash)</span>
-<span class="fc" id="L66">                .subHashes(subHashes)</span>
-<span class="fc" id="L67">                .algorithm(algorithm)</span>
-<span class="fc" id="L68">                .parameters(parameters)</span>
-<span class="fc" id="L69">                .build();</span>
+<span class="fc" id="L56">        String[] puzzlePieces = parts[3].split(&quot;&amp;&quot;);</span>
+<span class="fc" id="L57">        List&lt;PuzzlePiece&gt; puzzlePieceList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (String puzzlePiece : puzzlePieces) {</span>
+<span class="fc" id="L59">            puzzlePieceList.add(PuzzlePiece.fromString(puzzlePiece));</span>
+        }
+<span class="fc" id="L61">        return HashResult.builder()</span>
+<span class="fc" id="L62">                .hash(hash)</span>
+<span class="fc" id="L63">                .algorithm(algorithm)</span>
+<span class="fc" id="L64">                .parameters(parameterList)</span>
+<span class="fc" id="L65">                .puzzlePieces(puzzlePieceList)</span>
+<span class="fc" id="L66">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

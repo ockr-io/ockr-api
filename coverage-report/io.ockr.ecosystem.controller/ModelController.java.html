@@ -47,7 +47,7 @@ import java.util.List;
         InferenceResponse inferenceResponse;
 
         try {
-<span class="fc" id="L50">            inferenceResponse = modelService.inference(requestBody.getModel(), requestBody.getBase64Image());</span>
+<span class="fc" id="L50">            inferenceResponse = modelService.inference(requestBody.getModelName(), requestBody.getModelVersion(), requestBody.getBase64Image(), requestBody.getParameters());</span>
 <span class="nc" id="L51">        } catch (IOException e) {</span>
 <span class="nc" id="L52">            e.printStackTrace();</span>
 <span class="nc" id="L53">            return ResponseEntity.status(500).build();</span>

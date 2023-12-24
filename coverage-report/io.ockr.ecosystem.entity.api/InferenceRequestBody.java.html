@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
-<span class="nc" id="L8">@Setter</span>
-<span class="fc" id="L9">@AllArgsConstructor</span>
+<span class="nc" id="L10">@Setter</span>
+<span class="fc" id="L11">@AllArgsConstructor</span>
 public class InferenceRequestBody {
-<span class="fc" id="L11">    private String model;</span>
-<span class="fc" id="L12">    private String base64Image;</span>
+<span class="fc" id="L13">    private String modelName;</span>
+<span class="fc" id="L14">    private String modelVersion;</span>
+<span class="fc" id="L15">    private String base64Image;</span>
+<span class="fc" id="L16">    private Map&lt;String, Object&gt; parameters;</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

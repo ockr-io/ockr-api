@@ -24,7 +24,7 @@ import java.util.List;
     private PdfService pdfService;
 
     @PostMapping(&quot;/create/qrcode&quot;)
-    public ResponseEntity&lt;?&gt; createOckrQrCode(@RequestParam(&quot;file&quot;) MultipartFile file) {
+    public ResponseEntity&lt;?&gt; createOckrQrCode(@RequestParam(&quot;file&quot;) MultipartFile file, @RequestParam(&quot;base64Image&quot;) String base64Image) {
 <span class="nc bnc" id="L28" title="All 4 branches missed.">        if (file.getContentType() != null &amp;&amp; !file.getContentType().equals(&quot;application/pdf&quot;)) {</span>
 <span class="nc" id="L29">            return ResponseEntity.badRequest().body(&quot;The provided file is not a PDF file&quot;);</span>
         }
@@ -41,7 +41,7 @@ import java.util.List;
         }
 
 <span class="nc" id="L43">        DefaultPuzzleAlgorithm defaultPuzzleAlgorithm = new DefaultPuzzleAlgorithm();</span>
-<span class="nc" id="L44">        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions);</span>
+<span class="nc" id="L44">        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions, base64Image);</span>
 
 <span class="nc" id="L46">        return ResponseEntity.ok(hashResult.toString());</span>
     }

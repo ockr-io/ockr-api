@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PuzzlePiece.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.entity</a> &gt; <span class="el_source">PuzzlePiece.java</span></div><h1>PuzzlePiece.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.entity;
+
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="fc" id="L8">@AllArgsConstructor</span>
+<span class="nc" id="L9">@NoArgsConstructor</span>
+<span class="pc" id="L10">@Builder</span>
+@Getter
+<span class="nc" id="L12">@Setter</span>
+public class PuzzlePiece {
+<span class="nc" id="L14">    private List&lt;TextPosition&gt; textPositions;</span>
+<span class="nc" id="L15">    private String hash;</span>
+<span class="nc" id="L16">    private double error;</span>
+<span class="nc" id="L17">    private int x;</span>
+<span class="nc" id="L18">    private int y;</span>
+<span class="nc" id="L19">    private double width;</span>
+<span class="nc" id="L20">    private double height;</span>
+
+<span class="nc" id="L22">    private List&lt;TextPositionHelper&gt; helper;</span>
+
+    private static String formatDouble(double number) {
+<span class="fc" id="L25">        return String.format(&quot;%.6f&quot;, number)</span>
+<span class="fc" id="L26">                .replaceAll(&quot;0*$&quot;, &quot;&quot;)</span>
+<span class="fc" id="L27">                .replaceAll(&quot;\\.$&quot;, &quot;&quot;)</span>
+<span class="fc" id="L28">                .replaceAll(&quot;,&quot;, &quot;.&quot;);</span>
+    }
+
+    public static PuzzlePiece fromString(String text) {
+<span class="fc" id="L32">        String[] parts = text.split(&quot;#&quot;);</span>
+<span class="fc" id="L33">        String hash = parts[0];</span>
+<span class="fc" id="L34">        int x = Integer.parseInt(parts[1]);</span>
+<span class="fc" id="L35">        int y = Integer.parseInt(parts[2]);</span>
+<span class="fc" id="L36">        double width = Double.parseDouble(parts[3]);</span>
+<span class="fc" id="L37">        double height = Double.parseDouble(parts[4]);</span>
+
+<span class="fc" id="L39">        List&lt;TextPositionHelper&gt; helper = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (parts.length == 6) {</span>
+<span class="nc" id="L41">            String[] textPositionHelpers = parts[5].split(&quot;\\$&quot;);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            for (String textPositionHelper : textPositionHelpers) {</span>
+<span class="nc" id="L43">                String[] textPositionHelperParts = textPositionHelper.split(&quot;&lt;&gt;&quot;);</span>
+<span class="nc" id="L44">                String[] textPositionHelperParts2 = textPositionHelperParts[1].split(&quot;@&quot;);</span>
+<span class="nc" id="L45">                String[] textPositionHelperParts3 = textPositionHelperParts2[1].split(&quot;,&quot;);</span>
+<span class="nc" id="L46">                helper.add(TextPositionHelper.builder()</span>
+<span class="nc" id="L47">                        .text(textPositionHelperParts[0])</span>
+<span class="nc" id="L48">                        .prediction(textPositionHelperParts2[0])</span>
+<span class="nc" id="L49">                        .start(Integer.parseInt(textPositionHelperParts3[0]))</span>
+<span class="nc" id="L50">                        .end(Integer.parseInt(textPositionHelperParts3[1]))</span>
+<span class="nc" id="L51">                        .build());</span>
+            }
+        }
+
+<span class="fc" id="L55">        return PuzzlePiece.builder()</span>
+<span class="fc" id="L56">                .hash(hash)</span>
+<span class="fc" id="L57">                .x(x)</span>
+<span class="fc" id="L58">                .y(y)</span>
+<span class="fc" id="L59">                .width(width)</span>
+<span class="fc" id="L60">                .height(height)</span>
+<span class="fc" id="L61">                .helper(helper)</span>
+<span class="fc" id="L62">                .build();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="pc bpc" id="L67" title="3 of 4 branches missed.">        if (helper == null || helper.size() == 0) {</span>
+<span class="fc" id="L68">            return &quot;%s#%d#%d#%s#%s&quot;.formatted(hash, x, y, formatDouble(width), formatDouble(height));</span>
+        } else {
+<span class="nc" id="L70">            StringBuilder content = new StringBuilder(&quot;%s#%d#%d#%s#%s#&quot;.formatted(hash, x, y, formatDouble(width), formatDouble(height)));</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            for (TextPositionHelper textPositionHelper : helper) {</span>
+<span class="nc" id="L72">                content.append(textPositionHelper.toString()).append(&quot;$&quot;);</span>
+<span class="nc" id="L73">            }</span>
+<span class="nc" id="L74">            return content.append(&quot;#&quot;).toString();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
