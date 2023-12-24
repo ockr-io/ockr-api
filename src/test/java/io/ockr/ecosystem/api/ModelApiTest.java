@@ -19,6 +19,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.with;
@@ -47,8 +48,16 @@ public class ModelApiTest {
         wireMockServer.start();
 
         InferenceResponse inferenceResponse = InferenceResponse.builder()
-                .model("PP-OCRv3")
-                .ocrResults(List.of(
+                .ocrModelName("PP-OCRv3")
+                .ocrModelVersion("latest")
+                .parameters(Map.of(
+                        "segmentation_threshold", 0.3,
+                        "detection_threshold", 0.6,
+                        "unclip_ratio", 3,
+                        "max_candidates", 1000,
+                        "min_size", 3
+                ))
+                .prediction(List.of(
                         TextPosition.builder()
                                 .x(0.0)
                                 .y(0.0)
@@ -125,11 +134,21 @@ public class ModelApiTest {
     @Order(6)
     public void testInference() {
         String base64Image = "SGVsbG8gZnJvbSB0aGUgb3RoZXIgc2lkZQ==";
-        String model = "PP-OCRv3";
-        Response response = with().contentType(ContentType.JSON).body(new InferenceRequestBody(model, base64Image)).post(INFERENCE_ENDPOINT);
+        String modelName = "PP-OCRv3";
+        String modelVersion = "latest";
+        Map<String, Object> parameters = Map.of(
+                "segmentation_threshold", 0.3,
+                "detection_threshold", 0.6,
+                "unclip_ratio", 3,
+                "max_candidates", 1000,
+                "min_size", 3
+        );
+
+        Response response = with().contentType(ContentType.JSON).body(new InferenceRequestBody(
+                modelName, modelVersion, base64Image, parameters)).post(INFERENCE_ENDPOINT);
         Assertions.assertEquals(200, response.getStatusCode());
         InferenceResponse inferenceResponse = response.getBody().as(InferenceResponse.class);
-        Assertions.assertEquals(inferenceResponse.getModel(), model);
-        Assertions.assertEquals(inferenceResponse.getOcrResults().size(), 2);
+        Assertions.assertEquals(inferenceResponse.getOcrModelName(), modelName);
+        Assertions.assertEquals(inferenceResponse.getPrediction().size(), 2);
     }
 }

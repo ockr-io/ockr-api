@@ -24,7 +24,7 @@ public class PdfController {
     private PdfService pdfService;
 
     @PostMapping("/create/qrcode")
-    public ResponseEntity<?> createOckrQrCode(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> createOckrQrCode(@RequestParam("file") MultipartFile file, @RequestParam("base64Image") String base64Image) {
         if (file.getContentType() != null && !file.getContentType().equals("application/pdf")) {
             return ResponseEntity.badRequest().body("The provided file is not a PDF file");
         }
@@ -41,7 +41,7 @@ public class PdfController {
         }
 
         DefaultPuzzleAlgorithm defaultPuzzleAlgorithm = new DefaultPuzzleAlgorithm();
-        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions);
+        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions, base64Image);
 
         return ResponseEntity.ok(hashResult.toString());
     }

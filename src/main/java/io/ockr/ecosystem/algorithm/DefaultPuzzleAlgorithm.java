@@ -1,9 +1,8 @@
 package io.ockr.ecosystem.algorithm;
 
 import io.ockr.ecosystem.entity.HashResult;
+import io.ockr.ecosystem.entity.PuzzlePiece;
 import io.ockr.ecosystem.entity.TextPosition;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,12 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
     }
 
     @Override
-    public HashResult compute(List<TextPosition> textPositions) {
+    protected double error(List<TextPosition> inferenceResult, List<TextPosition> groundTruth) {
+        return 0;
+    }
+
+    @Override
+    public HashResult compute(List<TextPosition> textPositions, String base64Image) {
         int sliceX = getIntegerParameter("xSlice");
         int sliceY = getIntegerParameter("ySlice");
         double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);
@@ -46,7 +50,7 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
                 .reduce("", (s, textPosition) -> s + textPosition.getText(), String::concat);
         result.setHash(this.hash(text));
 
-        List<String> subHashes = new ArrayList<>();
+        List<PuzzlePiece> puzzlePieces = new ArrayList<>();
 
         for (int i = 0; i < sliceX; i++) {
             for (int j =0; j < sliceY; j++) {
@@ -58,16 +62,18 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
                         .toList();
                 String puzzleText = textUnderPuzzleArea.stream()
                         .reduce("", (s, textPosition) -> s + textPosition.getText(), String::concat);
-                subHashes.add(this.hash(puzzleText));
+                puzzlePieces.add(PuzzlePiece.builder()
+                        .textPositions(textUnderPuzzleArea)
+                        .hash(this.hash(puzzleText))
+                        .x(i)
+                        .y(j)
+                        .width(sliceWidth)
+                        .height(sliceHeight)
+                        .build());
             }
         }
 
-        result.setSubHashes(subHashes);
+        result.setPuzzlePieces(puzzlePieces);
         return result;
-    }
-
-    @Override
-    public String hash(String text) {
-        return DigestUtils.sha256Hex(text);
     }
 }

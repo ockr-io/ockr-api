@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -36,8 +37,16 @@ public class ModelServiceTest {
         wireMockServer.start();
 
         InferenceResponse inferenceResponse = InferenceResponse.builder()
-                .model("PP-OCRv3")
-                .ocrResults(List.of(
+                .ocrModelName("PP-OCRv3")
+                .ocrModelVersion("latest")
+                .parameters(Map.of(
+                        "segmentation_threshold", 0.3,
+                        "detection_threshold", 0.6,
+                        "unclip_ratio", 3,
+                        "max_candidates", 1000,
+                        "min_size", 3
+                ))
+                .prediction(List.of(
                         TextPosition.builder()
                                 .x(0.0)
                                 .y(0.0)
@@ -107,12 +116,12 @@ public class ModelServiceTest {
 
     @Test
     public void testInference() throws IOException {
-        InferenceResponse inferenceResponse = modelService.inference("PP-OCRv3", "base64Image");
+        InferenceResponse inferenceResponse = modelService.inference("PP-OCRv3", "latest", "base64Image", Map.of());
         Assertions.assertThat(inferenceResponse).isNotNull();
-        Assertions.assertThat(inferenceResponse.getModel()).isEqualTo("PP-OCRv3");
-        Assertions.assertThat(inferenceResponse.getOcrResults()).isNotNull();
-        Assertions.assertThat(inferenceResponse.getOcrResults().size()).isEqualTo(2);
-        Assertions.assertThat(inferenceResponse.getOcrResults().get(0).getText()).isEqualTo("Hello World");
-        Assertions.assertThat(inferenceResponse.getOcrResults().get(1).getText()).isEqualTo("Pizza");
+        Assertions.assertThat(inferenceResponse.getOcrModelName()).isEqualTo("PP-OCRv3");
+        Assertions.assertThat(inferenceResponse.getPrediction()).isNotNull();
+        Assertions.assertThat(inferenceResponse.getPrediction().size()).isEqualTo(2);
+        Assertions.assertThat(inferenceResponse.getPrediction().get(0).getText()).isEqualTo("Hello World");
+        Assertions.assertThat(inferenceResponse.getPrediction().get(1).getText()).isEqualTo("Pizza");
     }
 }

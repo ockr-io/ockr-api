@@ -13,4 +13,14 @@ public class TextPosition {
     private Double y;
     private Double width;
     private Double height;
+
+    @Override
+    public boolean equals(Object textPosition) {
+        return textPosition.getClass() == this.getClass() &&
+                this.text.equals(((TextPosition) textPosition).getText()) &&
+                this.x.equals(((TextPosition) textPosition).getX()) &&
+                this.y.equals(((TextPosition) textPosition).getY()) &&
+                this.width.equals(((TextPosition) textPosition).getWidth()) &&
+                this.height.equals(((TextPosition) textPosition).getHeight());
+    }
 }

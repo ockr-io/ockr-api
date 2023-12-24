@@ -13,28 +13,29 @@ import java.util.List;
 @Builder
 public class HashResult {
     private String hash;
-    private List<String> subHashes;
     private String algorithm;
     private List<Parameter> parameters;
+
+    private List<PuzzlePiece> puzzlePieces;
 
     @Override
     public String toString() {
         StringBuilder content = new StringBuilder(hash + "|");
-
-        content.append(subHashes.size()).append("|");
-        for (String subHash : subHashes) {
-            content.append(subHash).append("|");
-        }
-
         content.append(algorithm).append("|");
 
         for (Parameter parameter : parameters) {
-            content.append(parameter.getName()).append("|");
+            content.append(parameter.getName()).append("$");
             String value = parameter.getValue();
             if (value == null) {
                 value = parameter.getDefaultValue();
             }
-            content.append(value).append("|");
+            content.append(value).append("$");
+        }
+
+        content.append("|");
+
+        for (PuzzlePiece puzzlePiece : puzzlePieces) {
+            content.append(puzzlePiece.toString()).append("&");
         }
 
         return content.toString();
@@ -43,29 +44,25 @@ public class HashResult {
     public static HashResult fromString(String text) {
         String[] parts = text.split("\\|");
         String hash = parts[0];
-
-        int subHashCount = Integer.parseInt(parts[1]);
-        List<String> subHashes = List.of(parts).subList(2, 2 + subHashCount);
-
-        String algorithm = parts[2 + subHashCount];
-
-        List<String> parameterText = List.of(parts).subList(3 + subHashCount, parts.length);
-        List<Parameter> parameters = new ArrayList<>();
-
-        for (int i = 0; i < parameterText.size(); i += 2) {
-            String parameterName = parameterText.get(i);
-            String parameterValue = parameterText.get(i + 1);
-            parameters.add(Parameter.builder()
-                    .name(parameterName)
-                    .value(parameterValue)
+        String algorithm = parts[1];
+        String[] parameters = parts[2].split("\\$");
+        List<Parameter> parameterList = new ArrayList<>();
+        for (int i = 0; i < parameters.length; i += 2) {
+            parameterList.add(Parameter.builder()
+                    .name(parameters[i])
+                    .value(parameters[i + 1])
                     .build());
         }
-
+        String[] puzzlePieces = parts[3].split("&");
+        List<PuzzlePiece> puzzlePieceList = new ArrayList<>();
+        for (String puzzlePiece : puzzlePieces) {
+            puzzlePieceList.add(PuzzlePiece.fromString(puzzlePiece));
+        }
         return HashResult.builder()
                 .hash(hash)
-                .subHashes(subHashes)
                 .algorithm(algorithm)
-                .parameters(parameters)
+                .parameters(parameterList)
+                .puzzlePieces(puzzlePieceList)
                 .build();
     }
 }
