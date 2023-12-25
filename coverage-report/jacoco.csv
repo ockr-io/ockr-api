@@ -5,7 +5,7 @@ Ockr API,io.ockr.ecosystem.algorithm,ParameterType,0,27,0,0,0,2,0,1,0,1
 Ockr API,io.ockr.ecosystem.algorithm,Parameter,26,34,0,0,3,6,7,6,7,6
 Ockr API,io.ockr.ecosystem.algorithm,Parameter.ParameterBuilder,12,42,0,0,0,1,1,7,1,7
 Ockr API,io.ockr.ecosystem.algorithm,Algorithm,619,52,97,5,116,13,72,6,22,5
-Ockr API,io.ockr.ecosystem.algorithm,PuzzlePingPongAlgorithm,905,0,84,0,195,0,58,0,16,0
+Ockr API,io.ockr.ecosystem.algorithm,PuzzlePingPongAlgorithm,579,413,66,20,113,93,44,16,8,9
 Ockr API,io.ockr.ecosystem,OckrApiApplication,5,3,0,0,2,1,1,1,1,1
 Ockr API,io.ockr.ecosystem.entity.api,ModelRequestBody,12,21,0,0,1,4,3,4,3,4
 Ockr API,io.ockr.ecosystem.entity.api,InferenceResponse.InferenceResponseBuilder,10,35,0,0,0,1,1,6,1,6
