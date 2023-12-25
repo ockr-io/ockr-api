@@ -83,14 +83,32 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         return overlapX * overlapY;
     }
 
-    private int hammingDistance(String a, String b) {
-        int distance = 0;
-        for (int i = 0; i < Math.min(a.length(), b.length()); i++) {
-            if (a.charAt(i) != b.charAt(i)) {
-                distance++;
+    public double relativeOverlap(TextPosition a, TextPosition b) {
+        return overlap(a, b) / area(a);
+    }
+
+    private int levenshteinDistance(String a, String b) {
+        int aLength = a.length() + 1;
+        int bLength = b.length() + 1;
+
+        int[] cost = new int[aLength];
+        int[] update = new int[aLength];
+
+        for (int i = 0; i < aLength; i++) cost[i] = i;
+
+        for (int j = 1; j < bLength; j++) {
+            update[0] = j;
+
+            for(int i = 1; i < aLength; i++) {
+                int match = (a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1;
+                int costReplace = cost[i - 1] + match;
+                int costInsert  = cost[i] + 1;
+                int costDelete  = update[i - 1] + 1;
+                update[i] = Math.min(Math.min(costInsert, costDelete), costReplace);
             }
+            int[] swap = cost; cost = update; update = swap;
         }
-        return distance;
+        return cost[aLength - 1];
     }
 
     protected double error(List<TextPosition> inferenceResult, List<TextPosition> groundTruth) {
@@ -101,16 +119,23 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
 
             if (match == null) {
                 // Get full bounding box error if no match is found
-                error += textPosition.getWidth() * textPosition.getHeight();
+                error += area(textPosition);
                 // Receive a penalty for each character that is not found
                 error += textPosition.getText().length();
             } else {
-                error += overlap(match, textPosition);
-                error += hammingDistance(match.getText(), textPosition.getText());
+                int textLength = textPosition.getText().length();
+                double relativeOverlap = relativeOverlap(match, textPosition);
+                error += (1 - relativeOverlap) * textLength;
+                error += levenshteinDistance(match.getText(), textPosition.getText());
             }
         }
 
         return error;
+    }
+
+
+    private double area(TextPosition textPosition) {
+        return textPosition.getWidth() * textPosition.getHeight();
     }
 
     @Override
@@ -182,16 +207,13 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
     }
 
     private TextPosition findMatch(TextPosition textPosition, List<TextPosition> prediction) {
+        // try to find matches near the bounding box position
+        double tolerance = 64;
         List<TextPosition> matches = prediction.stream()
-                .filter(result -> result.getText().equals(textPosition.getText())).toList();
-        if (matches.isEmpty()) {
-            // try to find matches near the bounding box position
-            double tolerance = 64;
-            matches = prediction.stream()
-                    .filter(result -> result.getX() >= textPosition.getX() - tolerance && result.getX() <= textPosition.getX() + tolerance)
-                    .filter(result -> result.getY() >= textPosition.getY() - tolerance && result.getY() <= textPosition.getY() + tolerance)
-                    .toList();
-        }
+                .filter(result -> result.getX() >= textPosition.getX() - tolerance && result.getX() <= textPosition.getX() + tolerance)
+                .filter(result -> result.getY() >= textPosition.getY() - tolerance && result.getY() <= textPosition.getY() + tolerance)
+                .toList();
+
         TextPosition match = null;
         if (matches.size() > 1) {
             // find the best match by calculating the distance between the bounding box
@@ -220,8 +242,8 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
             if (puzzlePiece.getError() > 0) {
                 for (TextPosition textPosition : puzzlePiece.getTextPositions()) {
                     TextPosition match = findMatch(textPosition, prediction);
-                    if (match != null && hammingDistance(textPosition.getText(), match.getText()) > 0) {
-                        if (hammingDistance(textPosition.getText(),
+                    if (match != null && levenshteinDistance(textPosition.getText(), match.getText()) > 0) {
+                        if (levenshteinDistance(textPosition.getText(),
                                 match.getText()) > textPosition.getText().length() / 4) {
                             puzzlePiece.getHelper().add(TextPositionHelper.builder()
                                     .text(textPosition.getText())
