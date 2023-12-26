@@ -60,17 +60,6 @@ public abstract class Algorithm {
         return rightPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getX)).orElse(null);
     }
 
-    private PuzzlePiece getTopPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
-        if (puzzlePiece.getY() == 0) {
-            return null;
-        }
-        List<PuzzlePiece> topPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getY() < puzzlePiece.getY() && piece.getX() == puzzlePiece.getX()).toList();
-        if (topPuzzlePieces.size() == 0) {
-            return null;
-        }
-        return topPuzzlePieces.stream().max(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);
-    }
-
     private PuzzlePiece getBottomPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
         List<PuzzlePiece> bottomPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getY() > puzzlePiece.getY() && piece.getX() == puzzlePiece.getX()).toList();
         if (bottomPuzzlePieces.size() == 0) {

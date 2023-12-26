@@ -18,8 +18,8 @@ public class PuzzlePiece {
     private int y;
     private double width;
     private double height;
-
-    private List<TextPositionHelper> helper;
+    @Builder.Default
+    private List<TextPositionHelper> helper = new ArrayList<>();
 
     private static String formatDouble(double number) {
         return String.format("%.6f", number)

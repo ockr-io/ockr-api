@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -121,7 +122,6 @@ public class PuzzlePingPongAlgorithmTest {
 
         puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
 
-        Assertions.assertNotEquals(null, puzzlePieces.get(0).getHelper());
         Assertions.assertEquals(1, puzzlePieces.get(0).getHelper().size());
         Assertions.assertEquals("0", puzzlePieces.get(0).getHelper().get(0).getText());
         Assertions.assertEquals("o", puzzlePieces.get(0).getHelper().get(0).getPrediction());
@@ -136,11 +136,10 @@ public class PuzzlePingPongAlgorithmTest {
                 .text("Hello Worlg")
                 .page(0)
                 .build()));
-        puzzlePieces.get(0).setHelper(null);
+        puzzlePieces.get(0).setHelper(new ArrayList<>());
 
         puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
 
-        Assertions.assertNotEquals(null, puzzlePieces.get(0).getHelper());
         Assertions.assertEquals(1, puzzlePieces.get(0).getHelper().size());
         Assertions.assertEquals("g", puzzlePieces.get(0).getHelper().get(0).getText());
         Assertions.assertEquals("d", puzzlePieces.get(0).getHelper().get(0).getPrediction());
@@ -155,16 +154,56 @@ public class PuzzlePingPongAlgorithmTest {
                 .text("Holl0 worrg")
                 .page(0)
                 .build()));
-        puzzlePieces.get(0).setHelper(null);
+        puzzlePieces.get(0).setHelper(new ArrayList<>());
 
         puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
 
-        Assertions.assertNotEquals(null, puzzlePieces.get(0).getHelper());
         Assertions.assertEquals(1, puzzlePieces.get(0).getHelper().size());
         Assertions.assertEquals("Holl0 worrg", puzzlePieces.get(0).getHelper().get(0).getText());
         Assertions.assertEquals("Hello World", puzzlePieces.get(0).getHelper().get(0).getPrediction());
         Assertions.assertEquals(0, puzzlePieces.get(0).getHelper().get(0).getStart());
         Assertions.assertEquals(10, puzzlePieces.get(0).getHelper().get(0).getEnd());
+
+        puzzlePieces.get(0).setTextPositions(List.of(TextPosition.builder()
+                .x(0.0)
+                .y(0.0)
+                .width(100.0)
+                .height(100.0)
+                .text("Hello Worrg")
+                .page(0)
+                .build()));
+        puzzlePieces.get(0).setHelper(new ArrayList<>());
+
+        puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
+
+        Assertions.assertEquals(1, puzzlePieces.get(0).getHelper().size());
+        Assertions.assertEquals("rg", puzzlePieces.get(0).getHelper().get(0).getText());
+        Assertions.assertEquals("ld", puzzlePieces.get(0).getHelper().get(0).getPrediction());
+        Assertions.assertEquals(9, puzzlePieces.get(0).getHelper().get(0).getStart());
+        Assertions.assertEquals(10, puzzlePieces.get(0).getHelper().get(0).getEnd());
+
+        puzzlePieces.get(0).setTextPositions(List.of(TextPosition.builder()
+                .x(0.0)
+                .y(0.0)
+                .width(100.0)
+                .height(100.0)
+                .text("Hello Wrrrd")
+                .page(0)
+                .build()));
+        puzzlePieces.get(0).setHelper(new ArrayList<>());
+
+        puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
+
+        Assertions.assertEquals(2, puzzlePieces.get(0).getHelper().size());
+        Assertions.assertEquals("r", puzzlePieces.get(0).getHelper().get(0).getText());
+        Assertions.assertEquals("o", puzzlePieces.get(0).getHelper().get(0).getPrediction());
+        Assertions.assertEquals(7, puzzlePieces.get(0).getHelper().get(0).getStart());
+        Assertions.assertEquals(7, puzzlePieces.get(0).getHelper().get(0).getEnd());
+
+        Assertions.assertEquals("r", puzzlePieces.get(0).getHelper().get(1).getText());
+        Assertions.assertEquals("l", puzzlePieces.get(0).getHelper().get(1).getPrediction());
+        Assertions.assertEquals(9, puzzlePieces.get(0).getHelper().get(1).getStart());
+        Assertions.assertEquals(9, puzzlePieces.get(0).getHelper().get(1).getEnd());
     }
 
 }
