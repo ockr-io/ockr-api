@@ -249,7 +249,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
                                         .text(textPosition.getText())
                                         .prediction(match.getText())
                                         .start(0)
-                                        .end(textPosition.getText().length())
+                                        .end(textPosition.getText().length() - 1)
                                         .build()));
                         } else {
                             // find differences in the text
