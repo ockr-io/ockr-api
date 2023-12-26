@@ -3,10 +3,10 @@ package io.ockr.ecosystem.algorithm;
 import io.ockr.ecosystem.entity.HashResult;
 import io.ockr.ecosystem.entity.PuzzlePiece;
 import io.ockr.ecosystem.entity.TextPosition;
-import io.ockr.ecosystem.entity.api.InferenceResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class Algorithm {
@@ -42,19 +42,41 @@ public abstract class Algorithm {
     protected abstract double error(List<TextPosition> inferenceResult, List<TextPosition> groundTruth);
 
     private PuzzlePiece getLeftPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
-        return puzzlePieces.stream().filter(piece -> piece.getX() == puzzlePiece.getX() - 1 && piece.getY() == puzzlePiece.getY()).findFirst().orElse(null);
+        if (puzzlePiece.getX() == 0) {
+            return null;
+        }
+        List<PuzzlePiece> leftPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getX() < puzzlePiece.getX() && piece.getY() == puzzlePiece.getY()).toList();
+        if (leftPuzzlePieces.size() == 0) {
+            return null;
+        }
+        return leftPuzzlePieces.stream().max(Comparator.comparingDouble(PuzzlePiece::getX)).orElse(null);
     }
 
     private PuzzlePiece getRightPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
-        return puzzlePieces.stream().filter(piece -> piece.getX() == puzzlePiece.getX() + 1 && piece.getY() == puzzlePiece.getY()).findFirst().orElse(null);
+        List<PuzzlePiece> rightPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getX() > puzzlePiece.getX() && piece.getY() == puzzlePiece.getY()).toList();
+        if (rightPuzzlePieces.size() == 0) {
+            return null;
+        }
+        return rightPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getX)).orElse(null);
     }
 
     private PuzzlePiece getTopPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
-        return puzzlePieces.stream().filter(piece -> piece.getX() == puzzlePiece.getX() && piece.getY() == puzzlePiece.getY() - 1).findFirst().orElse(null);
+        if (puzzlePiece.getY() == 0) {
+            return null;
+        }
+        List<PuzzlePiece> topPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getY() < puzzlePiece.getY() && piece.getX() == puzzlePiece.getX()).toList();
+        if (topPuzzlePieces.size() == 0) {
+            return null;
+        }
+        return topPuzzlePieces.stream().max(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);
     }
 
     private PuzzlePiece getBottomPuzzlePiece(PuzzlePiece puzzlePiece, List<PuzzlePiece> puzzlePieces) {
-        return puzzlePieces.stream().filter(piece -> piece.getX() == puzzlePiece.getX() && piece.getY() == puzzlePiece.getY() + 1).findFirst().orElse(null);
+        List<PuzzlePiece> bottomPuzzlePieces = puzzlePieces.stream().filter(piece -> piece.getY() > puzzlePiece.getY() && piece.getX() == puzzlePiece.getX()).toList();
+        if (bottomPuzzlePieces.size() == 0) {
+            return null;
+        }
+        return bottomPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);
     }
 
     private boolean checkMerge(PuzzlePiece origin, PuzzlePiece target) {
@@ -87,6 +109,9 @@ public abstract class Algorithm {
             if (origin.getHeight() == target.getHeight()) {
                 target.setWidth(target.getWidth() + origin.getWidth());
                 target.setX(origin.getX());
+                if (origin.getTextPositions().size() > 0) {
+                    target.setTextPositions(origin.getTextPositions());
+                }
                 puzzlePieces.remove(origin);
                 return true;
             }
@@ -139,15 +164,6 @@ public abstract class Algorithm {
                     }
                 }
 
-                if (puzzlePiece.getY() == 0) {
-                    PuzzlePiece puzzlePieceTop = getTopPuzzlePiece(puzzlePiece, puzzlePieces);
-                    if (puzzlePieceTop != null) {
-                        if (mergeTopIfPossible(puzzlePiece, puzzlePieceTop, puzzlePieces)) {
-                            atLeastOneMerge = true;
-                        }
-                    }
-                }
-
                 PuzzlePiece puzzlePieceLeft = getLeftPuzzlePiece(puzzlePiece, puzzlePieces);
                 if (puzzlePieceLeft != null) {
                     if (mergeLeftIfPossible(puzzlePiece, puzzlePieceLeft, puzzlePieces)) {
@@ -156,9 +172,18 @@ public abstract class Algorithm {
                     }
                 }
 
-                PuzzlePiece puzzlePieceBottom = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);
-                if (puzzlePieceBottom != null) {
-                    if (mergeBottomIfPossible(puzzlePiece, puzzlePieceBottom, puzzlePieces)) {
+                if (puzzlePiece.getY() == 0) {
+                    PuzzlePiece puzzlePieceBottom = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);
+                    if (puzzlePieceBottom != null) {
+                        if (mergeTopIfPossible(puzzlePiece, puzzlePieceBottom, puzzlePieces)) {
+                            atLeastOneMerge = true;
+                        }
+                    }
+                }
+
+                PuzzlePiece puzzlePieceTop = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);
+                if (puzzlePieceTop != null) {
+                    if (mergeBottomIfPossible(puzzlePiece, puzzlePieceTop, puzzlePieces)) {
                         atLeastOneMerge = true;
                     }
                 }
@@ -169,10 +194,14 @@ public abstract class Algorithm {
     }
 
     protected List<PuzzlePiece> createPuzzle(List<TextPosition> textPositions, int sliceX, int sliceY) {
-        double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);
-        double maxX = textPositions.stream().mapToDouble(TextPosition::getX).max().orElse(0);
-        double minY = textPositions.stream().mapToDouble(TextPosition::getY).min().orElse(0);
-        double maxY = textPositions.stream().mapToDouble(TextPosition::getY).max().orElse(0);
+        double minX = textPositions.stream()
+                .map(TextPosition::getX).min(Double::compareTo).orElse(0.0);
+        double maxX = textPositions.stream()
+                .map(position -> position.getX() + position.getWidth()).max(Double::compareTo).orElse(0.0);
+        double minY = textPositions.stream()
+                .map(TextPosition::getY).min(Double::compareTo).orElse(0.0);
+        double maxY = textPositions.stream()
+                .map(position -> position.getY() + position.getHeight()).max(Double::compareTo).orElse(0.0);
         double areaWidth = maxX - minX;
         double areaHeight = maxY - minY;
         double sliceWidth = areaWidth / sliceX;
@@ -180,10 +209,10 @@ public abstract class Algorithm {
 
         List<PuzzlePiece> puzzlePieces = new ArrayList<>();
 
-        for (int i = 0; i < sliceX; i++) {
-            for (int j =0; j < sliceY; j++) {
-                double puzzlePositionX = i * sliceWidth;
-                double puzzlePositionY = j * sliceHeight;
+        for (int y = 0; y < sliceY; y++) {
+            for (int x =0; x < sliceX; x++) {
+                double puzzlePositionX = x * sliceWidth;
+                double puzzlePositionY = y * sliceHeight;
                 List<TextPosition> textUnderPuzzleArea = textPositions.stream()
                         .filter(textPosition -> textPosition.getX() >= puzzlePositionX && textPosition.getX() <= puzzlePositionX + sliceWidth)
                         .filter(textPosition -> textPosition.getY() >= puzzlePositionY && textPosition.getY() <= puzzlePositionY + sliceHeight)
@@ -195,8 +224,8 @@ public abstract class Algorithm {
                 PuzzlePiece puzzlePiece = PuzzlePiece.builder()
                         .textPositions(textUnderPuzzleArea)
                         .hash(this.hash(puzzleText))
-                        .x(i)
-                        .y(j)
+                        .x(x)
+                        .y(y)
                         .width(sliceWidth)
                         .height(sliceHeight)
                         .build();

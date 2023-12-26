@@ -237,7 +237,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         return match;
     }
 
-    private void provideHelp(List<PuzzlePiece> puzzlePieces, List<TextPosition> prediction) {
+    protected void provideHelp(List<PuzzlePiece> puzzlePieces, List<TextPosition> prediction) {
         for (PuzzlePiece puzzlePiece : puzzlePieces) {
             if (puzzlePiece.getError() > 0) {
                 for (TextPosition textPosition : puzzlePiece.getTextPositions()) {
