@@ -237,7 +237,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
 <span class="fc" id="L237">        return match;</span>
     }
 
-    private void provideHelp(List&lt;PuzzlePiece&gt; puzzlePieces, List&lt;TextPosition&gt; prediction) {
+    protected void provideHelp(List&lt;PuzzlePiece&gt; puzzlePieces, List&lt;TextPosition&gt; prediction) {
 <span class="nc bnc" id="L241" title="All 2 branches missed.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
 <span class="nc bnc" id="L242" title="All 2 branches missed.">            if (puzzlePiece.getError() &gt; 0) {</span>
 <span class="nc bnc" id="L243" title="All 2 branches missed.">                for (TextPosition textPosition : puzzlePiece.getTextPositions()) {</span>
