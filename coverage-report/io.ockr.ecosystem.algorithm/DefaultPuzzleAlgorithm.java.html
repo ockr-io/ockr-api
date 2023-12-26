@@ -74,7 +74,14 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
         }
 
 <span class="fc" id="L76">        result.setPuzzlePieces(puzzlePieces);</span>
-<span class="fc" id="L77">        return result;</span>
+
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (result.toString().length() &gt; MAX_QR_CODE_CHARS) {</span>
+<span class="nc" id="L79">            throw new RuntimeException(&quot;The QR code content is too big. The limit is &quot; +</span>
+                    MAX_QR_CODE_CHARS + &quot; characters and the current content has &quot; +
+<span class="nc" id="L81">                    result.toString().length() + &quot; characters.&quot;);</span>
+        }
+
+<span class="fc" id="L84">        return result;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

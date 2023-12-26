@@ -60,219 +60,208 @@ public abstract class Algorithm {
 <span class="fc" id="L60">        return rightPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getX)).orElse(null);</span>
     }
 
-    private PuzzlePiece getTopPuzzlePiece(PuzzlePiece puzzlePiece, List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (puzzlePiece.getY() == 0) {</span>
-<span class="nc" id="L65">            return null;</span>
-        }
-<span class="nc bnc" id="L67" title="All 4 branches missed.">        List&lt;PuzzlePiece&gt; topPuzzlePieces = puzzlePieces.stream().filter(piece -&gt; piece.getY() &lt; puzzlePiece.getY() &amp;&amp; piece.getX() == puzzlePiece.getX()).toList();</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (topPuzzlePieces.size() == 0) {</span>
-<span class="nc" id="L69">            return null;</span>
-        }
-<span class="nc" id="L71">        return topPuzzlePieces.stream().max(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);</span>
-    }
-
     private PuzzlePiece getBottomPuzzlePiece(PuzzlePiece puzzlePiece, List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="fc bfc" id="L75" title="All 4 branches covered.">        List&lt;PuzzlePiece&gt; bottomPuzzlePieces = puzzlePieces.stream().filter(piece -&gt; piece.getY() &gt; puzzlePiece.getY() &amp;&amp; piece.getX() == puzzlePiece.getX()).toList();</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (bottomPuzzlePieces.size() == 0) {</span>
-<span class="fc" id="L77">            return null;</span>
+<span class="fc bfc" id="L64" title="All 4 branches covered.">        List&lt;PuzzlePiece&gt; bottomPuzzlePieces = puzzlePieces.stream().filter(piece -&gt; piece.getY() &gt; puzzlePiece.getY() &amp;&amp; piece.getX() == puzzlePiece.getX()).toList();</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (bottomPuzzlePieces.size() == 0) {</span>
+<span class="fc" id="L66">            return null;</span>
         }
-<span class="fc" id="L79">        return bottomPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);</span>
+<span class="fc" id="L68">        return bottomPuzzlePieces.stream().min(Comparator.comparingDouble(PuzzlePiece::getY)).orElse(null);</span>
     }
 
     private boolean checkMerge(PuzzlePiece origin, PuzzlePiece target) {
-<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (origin.getTextPositions().size() == 0) {</span>
-<span class="fc" id="L84">            return true;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (origin.getTextPositions().size() == 0) {</span>
+<span class="fc" id="L73">            return true;</span>
         }
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (origin.getTextPositions().size() == target.getTextPositions().size()) {</span>
-<span class="fc" id="L88">            return origin.getTextPositions().stream().allMatch(</span>
-<span class="fc" id="L89">                    textPosition -&gt; target.getTextPositions().stream()</span>
-<span class="fc" id="L90">                            .anyMatch(textPosition::equals));</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (origin.getTextPositions().size() == target.getTextPositions().size()) {</span>
+<span class="fc" id="L77">            return origin.getTextPositions().stream().allMatch(</span>
+<span class="fc" id="L78">                    textPosition -&gt; target.getTextPositions().stream()</span>
+<span class="fc" id="L79">                            .anyMatch(textPosition::equals));</span>
         }
 
-<span class="fc" id="L93">        return false;</span>
+<span class="fc" id="L82">        return false;</span>
     }
 
     private boolean mergeLeftIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (checkMerge(origin, target)) {</span>
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            if (origin.getHeight() == target.getHeight()) {</span>
-<span class="fc" id="L99">                target.setWidth(target.getWidth() + origin.getWidth());</span>
-<span class="fc" id="L100">                puzzlePieces.remove(origin);</span>
-<span class="fc" id="L101">                return true;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (checkMerge(origin, target)) {</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">            if (origin.getHeight() == target.getHeight()) {</span>
+<span class="fc" id="L88">                target.setWidth(target.getWidth() + origin.getWidth());</span>
+<span class="fc" id="L89">                puzzlePieces.remove(origin);</span>
+<span class="fc" id="L90">                return true;</span>
             }
         }
-<span class="nc" id="L104">        return false;</span>
+<span class="nc" id="L93">        return false;</span>
     }
 
     private boolean mergeRightIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (checkMerge(origin, target)) {</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">            if (origin.getHeight() == target.getHeight()) {</span>
-<span class="fc" id="L110">                target.setWidth(target.getWidth() + origin.getWidth());</span>
-<span class="fc" id="L111">                target.setX(origin.getX());</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">                if (origin.getTextPositions().size() &gt; 0) {</span>
-<span class="nc" id="L113">                    target.setTextPositions(origin.getTextPositions());</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (checkMerge(origin, target)) {</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            if (origin.getHeight() == target.getHeight()) {</span>
+<span class="fc" id="L99">                target.setWidth(target.getWidth() + origin.getWidth());</span>
+<span class="fc" id="L100">                target.setX(origin.getX());</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">                if (origin.getTextPositions().size() &gt; 0) {</span>
+<span class="nc" id="L102">                    target.setTextPositions(origin.getTextPositions());</span>
                 }
-<span class="fc" id="L115">                puzzlePieces.remove(origin);</span>
-<span class="fc" id="L116">                return true;</span>
+<span class="fc" id="L104">                puzzlePieces.remove(origin);</span>
+<span class="fc" id="L105">                return true;</span>
+            }
+        }
+<span class="fc" id="L108">        return false;</span>
+    }
+
+    private boolean mergeTopIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (checkMerge(origin, target)) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (origin.getWidth() == target.getWidth()) {</span>
+<span class="nc" id="L114">                target.setHeight(target.getHeight() + origin.getHeight());</span>
+<span class="nc" id="L115">                puzzlePieces.remove(origin);</span>
+<span class="nc" id="L116">                return true;</span>
             }
         }
 <span class="fc" id="L119">        return false;</span>
     }
 
-    private boolean mergeTopIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
+    private boolean mergeBottomIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
 <span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (checkMerge(origin, target)) {</span>
 <span class="nc bnc" id="L124" title="All 2 branches missed.">            if (origin.getWidth() == target.getWidth()) {</span>
 <span class="nc" id="L125">                target.setHeight(target.getHeight() + origin.getHeight());</span>
-<span class="nc" id="L126">                puzzlePieces.remove(origin);</span>
-<span class="nc" id="L127">                return true;</span>
+<span class="nc" id="L126">                target.setY(origin.getY());</span>
+<span class="nc" id="L127">                puzzlePieces.remove(origin);</span>
+<span class="nc" id="L128">                return true;</span>
             }
         }
-<span class="fc" id="L130">        return false;</span>
-    }
-
-    private boolean mergeBottomIfPossible(PuzzlePiece origin, PuzzlePiece target, List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (checkMerge(origin, target)) {</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (origin.getWidth() == target.getWidth()) {</span>
-<span class="nc" id="L136">                target.setHeight(target.getHeight() + origin.getHeight());</span>
-<span class="nc" id="L137">                target.setY(origin.getY());</span>
-<span class="nc" id="L138">                puzzlePieces.remove(origin);</span>
-<span class="nc" id="L139">                return true;</span>
-            }
-        }
-<span class="fc" id="L142">        return false;</span>
+<span class="fc" id="L131">        return false;</span>
     }
 
     protected List&lt;PuzzlePiece&gt; mergePuzzlePieces(List&lt;PuzzlePiece&gt; puzzlePieces) {
-<span class="fc" id="L146">        boolean atLeastOneMerge = true;</span>
+<span class="fc" id="L135">        boolean atLeastOneMerge = true;</span>
 
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        while (atLeastOneMerge) {</span>
-<span class="fc" id="L149">            atLeastOneMerge = false;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        while (atLeastOneMerge) {</span>
+<span class="fc" id="L138">            atLeastOneMerge = false;</span>
 
-<span class="fc bfc" id="L151" title="All 2 branches covered.">            for (int i = 0; i &lt; puzzlePieces.size(); i++) {</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">                if (atLeastOneMerge) {</span>
-<span class="fc" id="L153">                    continue;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (int i = 0; i &lt; puzzlePieces.size(); i++) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                if (atLeastOneMerge) {</span>
+<span class="fc" id="L142">                    continue;</span>
                 }
-<span class="fc" id="L155">                PuzzlePiece puzzlePiece = puzzlePieces.get(i);</span>
+<span class="fc" id="L144">                PuzzlePiece puzzlePiece = puzzlePieces.get(i);</span>
 
-<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (puzzlePiece.getX() == 0) {</span>
-<span class="fc" id="L158">                    PuzzlePiece puzzlePieceRight = getRightPuzzlePiece(puzzlePiece, puzzlePieces);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">                    if (puzzlePieceRight != null) {</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">                        if (mergeRightIfPossible(puzzlePiece, puzzlePieceRight, puzzlePieces)) {</span>
-<span class="fc" id="L161">                            atLeastOneMerge = true;</span>
-<span class="fc" id="L162">                            continue;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                if (puzzlePiece.getX() == 0) {</span>
+<span class="fc" id="L147">                    PuzzlePiece puzzlePieceRight = getRightPuzzlePiece(puzzlePiece, puzzlePieces);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">                    if (puzzlePieceRight != null) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                        if (mergeRightIfPossible(puzzlePiece, puzzlePieceRight, puzzlePieces)) {</span>
+<span class="fc" id="L150">                            atLeastOneMerge = true;</span>
+<span class="fc" id="L151">                            continue;</span>
                         }
                     }
                 }
 
-<span class="fc" id="L167">                PuzzlePiece puzzlePieceLeft = getLeftPuzzlePiece(puzzlePiece, puzzlePieces);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">                if (puzzlePieceLeft != null) {</span>
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">                    if (mergeLeftIfPossible(puzzlePiece, puzzlePieceLeft, puzzlePieces)) {</span>
-<span class="fc" id="L170">                        atLeastOneMerge = true;</span>
-<span class="fc" id="L171">                        continue;</span>
+<span class="fc" id="L156">                PuzzlePiece puzzlePieceLeft = getLeftPuzzlePiece(puzzlePiece, puzzlePieces);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (puzzlePieceLeft != null) {</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                    if (mergeLeftIfPossible(puzzlePiece, puzzlePieceLeft, puzzlePieces)) {</span>
+<span class="fc" id="L159">                        atLeastOneMerge = true;</span>
+<span class="fc" id="L160">                        continue;</span>
                     }
                 }
 
-<span class="fc bfc" id="L175" title="All 2 branches covered.">                if (puzzlePiece.getY() == 0) {</span>
-<span class="fc" id="L176">                    PuzzlePiece puzzlePieceBottom = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);</span>
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">                    if (puzzlePieceBottom != null) {</span>
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">                        if (mergeTopIfPossible(puzzlePiece, puzzlePieceBottom, puzzlePieces)) {</span>
-<span class="nc" id="L179">                            atLeastOneMerge = true;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                if (puzzlePiece.getY() == 0) {</span>
+<span class="fc" id="L165">                    PuzzlePiece puzzlePieceBottom = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">                    if (puzzlePieceBottom != null) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                        if (mergeTopIfPossible(puzzlePiece, puzzlePieceBottom, puzzlePieces)) {</span>
+<span class="nc" id="L168">                            atLeastOneMerge = true;</span>
                         }
                     }
                 }
 
-<span class="fc" id="L184">                PuzzlePiece puzzlePieceTop = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">                if (puzzlePieceTop != null) {</span>
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                    if (mergeBottomIfPossible(puzzlePiece, puzzlePieceTop, puzzlePieces)) {</span>
-<span class="nc" id="L187">                        atLeastOneMerge = true;</span>
+<span class="fc" id="L173">                PuzzlePiece puzzlePieceTop = getBottomPuzzlePiece(puzzlePiece, puzzlePieces);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                if (puzzlePieceTop != null) {</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">                    if (mergeBottomIfPossible(puzzlePiece, puzzlePieceTop, puzzlePieces)) {</span>
+<span class="nc" id="L176">                        atLeastOneMerge = true;</span>
                     }
                 }
             }
         }
 
-<span class="fc" id="L193">        return puzzlePieces;</span>
+<span class="fc" id="L182">        return puzzlePieces;</span>
     }
 
     protected List&lt;PuzzlePiece&gt; createPuzzle(List&lt;TextPosition&gt; textPositions, int sliceX, int sliceY) {
-<span class="fc" id="L197">        double minX = textPositions.stream()</span>
-<span class="fc" id="L198">                .map(TextPosition::getX).min(Double::compareTo).orElse(0.0);</span>
-<span class="fc" id="L199">        double maxX = textPositions.stream()</span>
-<span class="fc" id="L200">                .map(position -&gt; position.getX() + position.getWidth()).max(Double::compareTo).orElse(0.0);</span>
-<span class="fc" id="L201">        double minY = textPositions.stream()</span>
-<span class="fc" id="L202">                .map(TextPosition::getY).min(Double::compareTo).orElse(0.0);</span>
-<span class="fc" id="L203">        double maxY = textPositions.stream()</span>
-<span class="fc" id="L204">                .map(position -&gt; position.getY() + position.getHeight()).max(Double::compareTo).orElse(0.0);</span>
-<span class="fc" id="L205">        double areaWidth = maxX - minX;</span>
-<span class="fc" id="L206">        double areaHeight = maxY - minY;</span>
-<span class="fc" id="L207">        double sliceWidth = areaWidth / sliceX;</span>
-<span class="fc" id="L208">        double sliceHeight = areaHeight / sliceY;</span>
+<span class="fc" id="L186">        double minX = textPositions.stream()</span>
+<span class="fc" id="L187">                .map(TextPosition::getX).min(Double::compareTo).orElse(0.0);</span>
+<span class="fc" id="L188">        double maxX = textPositions.stream()</span>
+<span class="fc" id="L189">                .map(position -&gt; position.getX() + position.getWidth()).max(Double::compareTo).orElse(0.0);</span>
+<span class="fc" id="L190">        double minY = textPositions.stream()</span>
+<span class="fc" id="L191">                .map(TextPosition::getY).min(Double::compareTo).orElse(0.0);</span>
+<span class="fc" id="L192">        double maxY = textPositions.stream()</span>
+<span class="fc" id="L193">                .map(position -&gt; position.getY() + position.getHeight()).max(Double::compareTo).orElse(0.0);</span>
+<span class="fc" id="L194">        double areaWidth = maxX - minX;</span>
+<span class="fc" id="L195">        double areaHeight = maxY - minY;</span>
+<span class="fc" id="L196">        double sliceWidth = areaWidth / sliceX;</span>
+<span class="fc" id="L197">        double sliceHeight = areaHeight / sliceY;</span>
 
-<span class="fc" id="L210">        List&lt;PuzzlePiece&gt; puzzlePieces = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L199">        List&lt;PuzzlePiece&gt; puzzlePieces = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L212" title="All 2 branches covered.">        for (int y = 0; y &lt; sliceY; y++) {</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">            for (int x =0; x &lt; sliceX; x++) {</span>
-<span class="fc" id="L214">                double puzzlePositionX = x * sliceWidth;</span>
-<span class="fc" id="L215">                double puzzlePositionY = y * sliceHeight;</span>
-<span class="fc" id="L216">                List&lt;TextPosition&gt; textUnderPuzzleArea = textPositions.stream()</span>
-<span class="fc bfc" id="L217" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePositionX &amp;&amp; textPosition.getX() &lt;= puzzlePositionX + sliceWidth)</span>
-<span class="fc bfc" id="L218" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getY() &gt;= puzzlePositionY &amp;&amp; textPosition.getY() &lt;= puzzlePositionY + sliceHeight)</span>
-<span class="fc" id="L219">                        .toList();</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        for (int y = 0; y &lt; sliceY; y++) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">            for (int x =0; x &lt; sliceX; x++) {</span>
+<span class="fc" id="L203">                double puzzlePositionX = x * sliceWidth;</span>
+<span class="fc" id="L204">                double puzzlePositionY = y * sliceHeight;</span>
+<span class="fc" id="L205">                List&lt;TextPosition&gt; textUnderPuzzleArea = textPositions.stream()</span>
+<span class="fc bfc" id="L206" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePositionX &amp;&amp; textPosition.getX() &lt;= puzzlePositionX + sliceWidth)</span>
+<span class="fc bfc" id="L207" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getY() &gt;= puzzlePositionY &amp;&amp; textPosition.getY() &lt;= puzzlePositionY + sliceHeight)</span>
+<span class="fc" id="L208">                        .toList();</span>
 
-<span class="fc" id="L221">                String puzzleText = textUnderPuzzleArea.stream()</span>
-<span class="fc" id="L222">                        .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L210">                String puzzleText = textUnderPuzzleArea.stream()</span>
+<span class="fc" id="L211">                        .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
 
-<span class="fc" id="L224">                PuzzlePiece puzzlePiece = PuzzlePiece.builder()</span>
-<span class="fc" id="L225">                        .textPositions(textUnderPuzzleArea)</span>
-<span class="fc" id="L226">                        .hash(this.hash(puzzleText))</span>
-<span class="fc" id="L227">                        .x(x)</span>
-<span class="fc" id="L228">                        .y(y)</span>
-<span class="fc" id="L229">                        .width(sliceWidth)</span>
-<span class="fc" id="L230">                        .height(sliceHeight)</span>
-<span class="fc" id="L231">                        .build();</span>
-<span class="fc" id="L232">                puzzlePieces.add(puzzlePiece);</span>
+<span class="fc" id="L213">                PuzzlePiece puzzlePiece = PuzzlePiece.builder()</span>
+<span class="fc" id="L214">                        .textPositions(textUnderPuzzleArea)</span>
+<span class="fc" id="L215">                        .hash(this.hash(puzzleText))</span>
+<span class="fc" id="L216">                        .x(x)</span>
+<span class="fc" id="L217">                        .y(y)</span>
+<span class="fc" id="L218">                        .width(sliceWidth)</span>
+<span class="fc" id="L219">                        .height(sliceHeight)</span>
+<span class="fc" id="L220">                        .build();</span>
+<span class="fc" id="L221">                puzzlePieces.add(puzzlePiece);</span>
             }
         }
 
-<span class="fc" id="L236">        return mergePuzzlePieces(puzzlePieces);</span>
+<span class="fc" id="L225">        return mergePuzzlePieces(puzzlePieces);</span>
     }
 
     protected Boolean getBooleanParameter(String name) {
-<span class="nc bnc" id="L240" title="All 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
-<span class="nc bnc" id="L241" title="All 4 branches missed.">            if (parameter.getName().equals(name) &amp;&amp; parameter.getType() == ParameterType.BOOLEAN) {</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">                if (parameter.getValue() == null) {</span>
-<span class="nc" id="L243">                    return Boolean.parseBoolean(parameter.getDefaultValue());</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
+<span class="nc bnc" id="L230" title="All 4 branches missed.">            if (parameter.getName().equals(name) &amp;&amp; parameter.getType() == ParameterType.BOOLEAN) {</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                if (parameter.getValue() == null) {</span>
+<span class="nc" id="L232">                    return Boolean.parseBoolean(parameter.getDefaultValue());</span>
                 }
-<span class="nc" id="L245">                return Boolean.parseBoolean(parameter.getValue());</span>
+<span class="nc" id="L234">                return Boolean.parseBoolean(parameter.getValue());</span>
             }
-<span class="nc" id="L247">        }</span>
-<span class="nc" id="L248">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist or is not a boolean&quot;);</span>
+<span class="nc" id="L236">        }</span>
+<span class="nc" id="L237">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist or is not a boolean&quot;);</span>
     }
 
     protected Integer getIntegerParameter(String name) {
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
-<span class="pc bpc" id="L253" title="1 of 4 branches missed.">            if (parameter.getName().equals(name) &amp;&amp; parameter.getType() == ParameterType.INTEGER) {</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">                if (parameter.getValue() == null) {</span>
-<span class="fc" id="L255">                    return Integer.parseInt(parameter.getDefaultValue());</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
+<span class="pc bpc" id="L242" title="1 of 4 branches missed.">            if (parameter.getName().equals(name) &amp;&amp; parameter.getType() == ParameterType.INTEGER) {</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">                if (parameter.getValue() == null) {</span>
+<span class="fc" id="L244">                    return Integer.parseInt(parameter.getDefaultValue());</span>
                 }
-<span class="nc" id="L257">                return Integer.parseInt(parameter.getValue());</span>
+<span class="nc" id="L246">                return Integer.parseInt(parameter.getValue());</span>
             }
-<span class="fc" id="L259">        }</span>
-<span class="nc" id="L260">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist or is not an integer&quot;);</span>
+<span class="fc" id="L248">        }</span>
+<span class="nc" id="L249">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist or is not an integer&quot;);</span>
     }
 
     public void setParameter(String name, String value) {
-<span class="nc bnc" id="L264" title="All 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
-<span class="nc bnc" id="L265" title="All 2 branches missed.">            if (parameter.getName().equals(name)) {</span>
-<span class="nc" id="L266">                parameter.setValue(value);</span>
-<span class="nc" id="L267">                return;</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        for (Parameter parameter : this.parameters) {</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">            if (parameter.getName().equals(name)) {</span>
+<span class="nc" id="L255">                parameter.setValue(value);</span>
+<span class="nc" id="L256">                return;</span>
             }
-<span class="nc" id="L269">        }</span>
-<span class="nc" id="L270">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist&quot;);</span>
+<span class="nc" id="L258">        }</span>
+<span class="nc" id="L259">        throw new IllegalArgumentException(&quot;Parameter &quot; + name + &quot; does not exist&quot;);</span>
     }
 
     public abstract HashResult compute(List&lt;TextPosition&gt; textPositions, String base64Image);
     public String hash(String text) {
-<span class="fc" id="L275">        return DigestUtils.sha256Hex(text);</span>
+<span class="fc" id="L264">        return DigestUtils.sha256Hex(text);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

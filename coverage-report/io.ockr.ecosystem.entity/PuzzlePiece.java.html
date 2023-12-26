@@ -7,7 +7,7 @@ import java.util.List;
 
 <span class="fc" id="L8">@AllArgsConstructor</span>
 <span class="nc" id="L9">@NoArgsConstructor</span>
-<span class="pc" id="L10">@Builder</span>
+<span class="pc bfc" id="L10" title="All 2 branches covered.">@Builder</span>
 @Getter
 <span class="pc" id="L12">@Setter</span>
 public class PuzzlePiece {
@@ -18,8 +18,8 @@ public class PuzzlePiece {
 <span class="fc" id="L18">    private int y;</span>
 <span class="fc" id="L19">    private double width;</span>
 <span class="fc" id="L20">    private double height;</span>
-
-<span class="fc" id="L22">    private List&lt;TextPositionHelper&gt; helper;</span>
+    @Builder.Default
+<span class="fc" id="L22">    private List&lt;TextPositionHelper&gt; helper = new ArrayList&lt;&gt;();</span>
 
     private static String formatDouble(double number) {
 <span class="fc" id="L25">        return String.format(&quot;%.6f&quot;, number)</span>
@@ -64,7 +64,7 @@ public class PuzzlePiece {
 
     @Override
     public String toString() {
-<span class="pc bpc" id="L67" title="3 of 4 branches missed.">        if (helper == null || helper.size() == 0) {</span>
+<span class="pc bpc" id="L67" title="2 of 4 branches missed.">        if (helper == null || helper.size() == 0) {</span>
 <span class="fc" id="L68">            return &quot;%s#%d#%d#%s#%s&quot;.formatted(hash, x, y, formatDouble(width), formatDouble(height));</span>
         } else {
 <span class="nc" id="L70">            StringBuilder content = new StringBuilder(&quot;%s#%d#%d#%s#%s#&quot;.formatted(hash, x, y, formatDouble(width), formatDouble(height)));</span>
