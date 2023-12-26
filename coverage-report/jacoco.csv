@@ -5,7 +5,7 @@ Ockr API,io.ockr.ecosystem.algorithm,ParameterType,0,27,0,0,0,2,0,1,0,1
 Ockr API,io.ockr.ecosystem.algorithm,Parameter,26,34,0,0,3,6,7,6,7,6
 Ockr API,io.ockr.ecosystem.algorithm,Parameter.ParameterBuilder,12,42,0,0,0,1,1,7,1,7
 Ockr API,io.ockr.ecosystem.algorithm,Algorithm,208,551,46,70,42,109,35,52,5,24
-Ockr API,io.ockr.ecosystem.algorithm,PuzzlePingPongAlgorithm,579,413,66,20,113,93,44,16,8,9
+Ockr API,io.ockr.ecosystem.algorithm,PuzzlePingPongAlgorithm,494,559,48,42,96,124,36,26,7,10
 Ockr API,io.ockr.ecosystem,OckrApiApplication,5,3,0,0,2,1,1,1,1,1
 Ockr API,io.ockr.ecosystem.entity.api,ModelRequestBody,12,21,0,0,1,4,3,4,3,4
 Ockr API,io.ockr.ecosystem.entity.api,InferenceResponse.InferenceResponseBuilder,10,35,0,0,0,1,1,6,1,6
@@ -17,13 +17,13 @@ Ockr API,io.ockr.ecosystem.controller,ModelController,11,59,1,1,4,17,1,4,0,4
 Ockr API,io.ockr.ecosystem.controller,PdfController,47,3,6,0,11,1,4,1,1,1
 Ockr API,io.ockr.ecosystem.enums,Algorithm,21,0,0,0,6,0,3,0,3,0
 Ockr API,io.ockr.ecosystem.format.pdf,PDFTextPositionStripper,0,112,0,0,0,23,0,5,0,5
-Ockr API,io.ockr.ecosystem.entity,TextPositionHelper.TextPositionHelperBuilder,45,0,0,0,1,0,7,0,7,0
+Ockr API,io.ockr.ecosystem.entity,TextPositionHelper.TextPositionHelperBuilder,10,35,0,0,0,1,1,6,1,6
 Ockr API,io.ockr.ecosystem.entity,TextPosition,30,84,10,2,3,13,6,16,0,16
 Ockr API,io.ockr.ecosystem.entity,HashResult,9,201,1,9,3,39,4,14,3,10
 Ockr API,io.ockr.ecosystem.entity,Model.ModelBuilder,15,30,0,0,0,1,2,5,2,5
-Ockr API,io.ockr.ecosystem.entity,TextPositionHelper,75,0,0,0,9,0,12,0,12,0
+Ockr API,io.ockr.ecosystem.entity,TextPositionHelper,44,31,0,0,3,6,6,6,6,6
 Ockr API,io.ockr.ecosystem.entity,TextPosition.TextPositionBuilder,14,49,0,0,0,1,1,8,1,8
 Ockr API,io.ockr.ecosystem.entity,HashResult.HashResultBuilder,10,35,0,0,0,1,1,6,1,6
 Ockr API,io.ockr.ecosystem.entity,PuzzlePiece.PuzzlePieceBuilder,23,58,0,0,0,1,2,9,2,9
 Ockr API,io.ockr.ecosystem.entity,Model,19,43,0,0,2,11,5,7,5,7
-Ockr API,io.ockr.ecosystem.entity,PuzzlePiece,164,161,8,2,20,30,15,12,10,12
+Ockr API,io.ockr.ecosystem.entity,PuzzlePiece,146,179,8,2,18,32,10,17,5,17
