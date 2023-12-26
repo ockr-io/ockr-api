@@ -1,6 +1,7 @@
 package io.ockr.ecosystem.controller;
 
 import io.ockr.ecosystem.algorithm.DefaultPuzzleAlgorithm;
+import io.ockr.ecosystem.algorithm.PuzzlePingPongAlgorithm;
 import io.ockr.ecosystem.entity.HashResult;
 import io.ockr.ecosystem.entity.TextPosition;
 import io.ockr.ecosystem.service.PdfService;
@@ -24,26 +25,27 @@ public class PdfController {
     private PdfService pdfService;
 
     @PostMapping("/create/qrcode")
-    public ResponseEntity<?> createOckrQrCode(@RequestParam("file") MultipartFile file, @RequestParam("base64Image") String base64Image) {
+    public ResponseEntity<?> createOckrQrCode(@RequestParam("file") MultipartFile file) {
         if (file.getContentType() != null && !file.getContentType().equals("application/pdf")) {
             return ResponseEntity.badRequest().body("The provided file is not a PDF file");
         }
 
         List<TextPosition> textPositions;
+        String base64Image;
         try {
             textPositions = new ArrayList<>(pdfService.extractTextPositions(file.getInputStream()));
+            base64Image = pdfService.pageToBase64Image(file.getInputStream(), 0);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Could not read PDF file");
         }
 
-        if (textPositions.size() == 0) {
+        if (textPositions.size() == 0 || base64Image.length() == 0) {
             return ResponseEntity.badRequest().body("PDF file does not contain any text");
         }
 
-        DefaultPuzzleAlgorithm defaultPuzzleAlgorithm = new DefaultPuzzleAlgorithm();
-        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions, base64Image);
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();
+        HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);
 
         return ResponseEntity.ok(hashResult.toString());
     }
-
 }

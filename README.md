@@ -18,3 +18,7 @@ cd ockr-api
 ./mvnw clean package
 java -jar target/ockr-api-0.2.0.jar
 ```
+
+## Documentation
+
+The documentation is available after starting the application at [http://localhost:9090/swagger-ui.html](http://localhost:9090/swagger-ui.html)

@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories
 @EntityScan
 public class OckrApiApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(OckrApiApplication.class, args);
     }
-
 }

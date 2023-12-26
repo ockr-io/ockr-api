@@ -5,17 +5,15 @@ import io.ockr.ecosystem.format.pdf.PDFTextPositionStripper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -29,6 +27,21 @@ public class PdfService {
     public List<TextPosition> extractTextPositions(File file) throws IOException {
         PDDocument document = Loader.loadPDF(file);
         return extractTextPositions(document);
+    }
+
+    public String pageToBase64Image(InputStream inputStream, int pageIndex) throws IOException {
+        PDDocument document = Loader.loadPDF(inputStream.readAllBytes());
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        PDPage page = document.getPage(pageIndex);
+
+        if (page != null) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(pageIndex, 300, ImageType.RGB);
+            ImageIO.write(bufferedImage, "jpg", byteArrayOutputStream);
+            return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        } else {
+            return null;
+        }
     }
 
     public List<TextPosition> extractTextPositions(PDDocument document) throws IOException {

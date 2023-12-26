@@ -44,3 +44,5 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 !.mvn/wrapper/maven-wrapper.jar
+
+data/
