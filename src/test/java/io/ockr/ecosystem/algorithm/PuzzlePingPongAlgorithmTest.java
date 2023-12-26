@@ -108,6 +108,25 @@ public class PuzzlePingPongAlgorithmTest {
         Assertions.assertEquals(340.0 / 3, puzzlePieces.get(2).getHeight());
         Assertions.assertEquals(1, puzzlePieces.get(2).getTextPositions().size());
         Assertions.assertEquals("In a perfect world no one would need no help", puzzlePieces.get(2).getTextPositions().get(0).getText());
+
+        puzzlePieces.get(0).setTextPositions(List.of(TextPosition.builder()
+                        .x(0.0)
+                        .y(0.0)
+                        .width(100.0)
+                        .height(100.0)
+                        .text("Hell0 World")
+                        .page(0)
+                        .build()));
+        puzzlePieces.get(0).setError(1.0);
+
+        puzzlePingPongAlgorithm.provideHelp(puzzlePieces, textPositions);
+
+        Assertions.assertNotEquals(null, puzzlePieces.get(0).getHelper());
+        Assertions.assertEquals(1, puzzlePieces.get(0).getHelper().size());
+        Assertions.assertEquals("0", puzzlePieces.get(0).getHelper().get(0).getText());
+        Assertions.assertEquals("o", puzzlePieces.get(0).getHelper().get(0).getPrediction());
+        Assertions.assertEquals(4, puzzlePieces.get(0).getHelper().get(0).getStart());
+        Assertions.assertEquals(4, puzzlePieces.get(0).getHelper().get(0).getEnd());
     }
 
 }

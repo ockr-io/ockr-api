@@ -245,12 +245,12 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
                     if (match != null && levenshteinDistance(textPosition.getText(), match.getText()) > 0) {
                         if (levenshteinDistance(textPosition.getText(),
                                 match.getText()) > textPosition.getText().length() / 4) {
-                            puzzlePiece.getHelper().add(TextPositionHelper.builder()
-                                    .text(textPosition.getText())
-                                    .prediction(match.getText())
-                                    .start(0)
-                                    .end(textPosition.getText().length())
-                                    .build());
+                                puzzlePiece.setHelper(List.of(TextPositionHelper.builder()
+                                        .text(textPosition.getText())
+                                        .prediction(match.getText())
+                                        .start(0)
+                                        .end(textPosition.getText().length())
+                                        .build()));
                         } else {
                             // find differences in the text
                             int start = 0;
@@ -263,22 +263,40 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
                                     end = i;
 
                                     if (i == textPosition.getText().length() - 1) {
-                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()
-                                                .text(textPosition.getText().substring(start, end + 1))
-                                                .prediction(match.getText().substring(start, end + 1))
-                                                .start(start)
-                                                .end(end)
-                                                .build());
+                                        if (puzzlePiece.getHelper() == null) {
+                                            puzzlePiece.setHelper(List.of(TextPositionHelper.builder()
+                                                    .text(textPosition.getText().substring(start, end + 1))
+                                                    .prediction(match.getText().substring(start, end + 1))
+                                                    .start(start)
+                                                    .end(end)
+                                                    .build()));
+                                        } else {
+                                            puzzlePiece.getHelper().add(TextPositionHelper.builder()
+                                                    .text(textPosition.getText().substring(start, end + 1))
+                                                    .prediction(match.getText().substring(start, end + 1))
+                                                    .start(start)
+                                                    .end(end)
+                                                    .build());
+                                        }
                                     }
 
                                 } else {
                                     if (start != 0) {
-                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()
-                                                .text(textPosition.getText().substring(start, end + 1))
-                                                .prediction(match.getText().substring(start, end + 1))
-                                                .start(start)
-                                                .end(end)
-                                                .build());
+                                        if (puzzlePiece.getHelper() == null) {
+                                            puzzlePiece.setHelper(List.of(TextPositionHelper.builder()
+                                                    .text(textPosition.getText().substring(start, end + 1))
+                                                    .prediction(match.getText().substring(start, end + 1))
+                                                    .start(start)
+                                                    .end(end)
+                                                    .build()));
+                                        } else {
+                                            puzzlePiece.getHelper().add(TextPositionHelper.builder()
+                                                    .text(textPosition.getText().substring(start, end + 1))
+                                                    .prediction(match.getText().substring(start, end + 1))
+                                                    .start(start)
+                                                    .end(end)
+                                                    .build());
+                                        }
                                         start = 0;
                                         end = 0;
                                     }
