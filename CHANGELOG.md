@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.3](https://github.com/ockr-io/ockr-api/compare/v0.2.2...v0.2.3) (2023-12-26)
+
+
+### Features
+
+* render jpg from pdf to feed the ping pong algorithm with data ([4c49442](https://github.com/ockr-io/ockr-api/commit/4c4944284c028b3cc920fd593c3271fe8592ea2b))
+
+
+### Bug Fixes
+
+* add default array list to builder pattern to prevent null pointer issues ([2f841ba](https://github.com/ockr-io/ockr-api/commit/2f841ba21113f066dd8bb70fcd9fa5950824db3d))
+
 ## [0.2.2](https://github.com/ockr-io/ockr-api/compare/v0.2.1...v0.2.2) (2023-12-26)
 
 
