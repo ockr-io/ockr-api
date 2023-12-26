@@ -244,13 +244,13 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
 <span class="fc" id="L244">                    TextPosition match = findMatch(textPosition, prediction);</span>
 <span class="pc bpc" id="L245" title="2 of 4 branches missed.">                    if (match != null &amp;&amp; levenshteinDistance(textPosition.getText(), match.getText()) &gt; 0) {</span>
 <span class="fc" id="L246">                        if (levenshteinDistance(textPosition.getText(),</span>
-<span class="pc bpc" id="L247" title="1 of 2 branches missed.">                                match.getText()) &gt; textPosition.getText().length() / 4) {</span>
-<span class="nc" id="L248">                                puzzlePiece.setHelper(List.of(TextPositionHelper.builder()</span>
-<span class="nc" id="L249">                                        .text(textPosition.getText())</span>
-<span class="nc" id="L250">                                        .prediction(match.getText())</span>
-<span class="nc" id="L251">                                        .start(0)</span>
-<span class="nc" id="L252">                                        .end(textPosition.getText().length())</span>
-<span class="nc" id="L253">                                        .build()));</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">                                match.getText()) &gt; textPosition.getText().length() / 4) {</span>
+<span class="fc" id="L248">                                puzzlePiece.setHelper(List.of(TextPositionHelper.builder()</span>
+<span class="fc" id="L249">                                        .text(textPosition.getText())</span>
+<span class="fc" id="L250">                                        .prediction(match.getText())</span>
+<span class="fc" id="L251">                                        .start(0)</span>
+<span class="fc" id="L252">                                        .end(textPosition.getText().length() - 1)</span>
+<span class="fc" id="L253">                                        .build()));</span>
                         } else {
                             // find differences in the text
 <span class="fc" id="L256">                            int start = 0;</span>
@@ -262,14 +262,14 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
                                     }
 <span class="fc" id="L263">                                    end = i;</span>
 
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">                                    if (i == textPosition.getText().length() - 1) {</span>
-<span class="nc bnc" id="L266" title="All 2 branches missed.">                                        if (puzzlePiece.getHelper() == null) {</span>
-<span class="nc" id="L267">                                            puzzlePiece.setHelper(List.of(TextPositionHelper.builder()</span>
-<span class="nc" id="L268">                                                    .text(textPosition.getText().substring(start, end + 1))</span>
-<span class="nc" id="L269">                                                    .prediction(match.getText().substring(start, end + 1))</span>
-<span class="nc" id="L270">                                                    .start(start)</span>
-<span class="nc" id="L271">                                                    .end(end)</span>
-<span class="nc" id="L272">                                                    .build()));</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">                                    if (i == textPosition.getText().length() - 1) {</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                                        if (puzzlePiece.getHelper() == null) {</span>
+<span class="fc" id="L267">                                            puzzlePiece.setHelper(List.of(TextPositionHelper.builder()</span>
+<span class="fc" id="L268">                                                    .text(textPosition.getText().substring(start, end + 1))</span>
+<span class="fc" id="L269">                                                    .prediction(match.getText().substring(start, end + 1))</span>
+<span class="fc" id="L270">                                                    .start(start)</span>
+<span class="fc" id="L271">                                                    .end(end)</span>
+<span class="fc" id="L272">                                                    .build()));</span>
                                         } else {
 <span class="nc" id="L274">                                            puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
 <span class="nc" id="L275">                                                    .text(textPosition.getText().substring(start, end + 1))</span>
