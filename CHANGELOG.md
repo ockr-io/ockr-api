@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/ockr-io/ockr-api/compare/v0.2.1...v0.2.2) (2023-12-26)
+
+
+### Bug Fixes
+
+* add more tests fix full helper size ([ca1cbe4](https://github.com/ockr-io/ockr-api/commit/ca1cbe4282fc062a53d2c18dfb1564897003740c))
+
 ## [0.2.1](https://github.com/ockr-io/ockr-api/compare/v0.2.0...v0.2.1) (2023-12-26)
 
 
