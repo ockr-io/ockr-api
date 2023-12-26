@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PdfController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.controller</a> &gt; <span class="el_source">PdfController.java</span></div><h1>PdfController.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.controller;
 
 import io.ockr.ecosystem.algorithm.DefaultPuzzleAlgorithm;
+import io.ockr.ecosystem.algorithm.PuzzlePingPongAlgorithm;
 import io.ockr.ecosystem.entity.HashResult;
 import io.ockr.ecosystem.entity.TextPosition;
 import io.ockr.ecosystem.service.PdfService;
@@ -18,33 +19,34 @@ import java.util.List;
 
 @RestController
 @RequestMapping(&quot;/api/v1/pdf/&quot;)
-<span class="fc" id="L21">public class PdfController {</span>
+<span class="fc" id="L22">public class PdfController {</span>
 
     @Autowired
     private PdfService pdfService;
 
     @PostMapping(&quot;/create/qrcode&quot;)
-    public ResponseEntity&lt;?&gt; createOckrQrCode(@RequestParam(&quot;file&quot;) MultipartFile file, @RequestParam(&quot;base64Image&quot;) String base64Image) {
-<span class="nc bnc" id="L28" title="All 4 branches missed.">        if (file.getContentType() != null &amp;&amp; !file.getContentType().equals(&quot;application/pdf&quot;)) {</span>
-<span class="nc" id="L29">            return ResponseEntity.badRequest().body(&quot;The provided file is not a PDF file&quot;);</span>
+    public ResponseEntity&lt;?&gt; createOckrQrCode(@RequestParam(&quot;file&quot;) MultipartFile file) {
+<span class="nc bnc" id="L29" title="All 4 branches missed.">        if (file.getContentType() != null &amp;&amp; !file.getContentType().equals(&quot;application/pdf&quot;)) {</span>
+<span class="nc" id="L30">            return ResponseEntity.badRequest().body(&quot;The provided file is not a PDF file&quot;);</span>
         }
 
         List&lt;TextPosition&gt; textPositions;
+        String base64Image;
         try {
-<span class="nc" id="L34">            textPositions = new ArrayList&lt;&gt;(pdfService.extractTextPositions(file.getInputStream()));</span>
-<span class="nc" id="L35">        } catch (IOException e) {</span>
-<span class="nc" id="L36">            return ResponseEntity.badRequest().body(&quot;Could not read PDF file&quot;);</span>
-<span class="nc" id="L37">        }</span>
+<span class="nc" id="L36">            textPositions = new ArrayList&lt;&gt;(pdfService.extractTextPositions(file.getInputStream()));</span>
+<span class="nc" id="L37">            base64Image = pdfService.pageToBase64Image(file.getInputStream(), 0);</span>
+<span class="nc" id="L38">        } catch (IOException e) {</span>
+<span class="nc" id="L39">            return ResponseEntity.badRequest().body(&quot;Could not read PDF file&quot;);</span>
+<span class="nc" id="L40">        }</span>
 
-<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (textPositions.size() == 0) {</span>
-<span class="nc" id="L40">            return ResponseEntity.badRequest().body(&quot;PDF file does not contain any text&quot;);</span>
+<span class="nc bnc" id="L42" title="All 4 branches missed.">        if (textPositions.size() == 0 || base64Image.length() == 0) {</span>
+<span class="nc" id="L43">            return ResponseEntity.badRequest().body(&quot;PDF file does not contain any text&quot;);</span>
         }
 
-<span class="nc" id="L43">        DefaultPuzzleAlgorithm defaultPuzzleAlgorithm = new DefaultPuzzleAlgorithm();</span>
-<span class="nc" id="L44">        HashResult hashResult = defaultPuzzleAlgorithm.compute(textPositions, base64Image);</span>
+<span class="nc" id="L46">        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();</span>
+<span class="nc" id="L47">        HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);</span>
 
-<span class="nc" id="L46">        return ResponseEntity.ok(hashResult.toString());</span>
+<span class="nc" id="L49">        return ResponseEntity.ok(hashResult.toString());</span>
     }
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

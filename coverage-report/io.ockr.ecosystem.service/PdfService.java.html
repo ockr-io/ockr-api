@@ -5,49 +5,62 @@ import io.ockr.ecosystem.format.pdf.PDFTextPositionStripper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
-<span class="fc" id="L22">public class PdfService {</span>
+<span class="fc" id="L20">public class PdfService {</span>
 
     public List&lt;TextPosition&gt; extractTextPositions(InputStream inputStream) throws IOException {
-<span class="nc" id="L25">        PDDocument document = Loader.loadPDF(inputStream.readAllBytes());</span>
-<span class="nc" id="L26">        return extractTextPositions(document);</span>
+<span class="nc" id="L23">        PDDocument document = Loader.loadPDF(inputStream.readAllBytes());</span>
+<span class="nc" id="L24">        return extractTextPositions(document);</span>
     }
 
     public List&lt;TextPosition&gt; extractTextPositions(File file) throws IOException {
-<span class="fc" id="L30">        PDDocument document = Loader.loadPDF(file);</span>
-<span class="fc" id="L31">        return extractTextPositions(document);</span>
+<span class="fc" id="L28">        PDDocument document = Loader.loadPDF(file);</span>
+<span class="fc" id="L29">        return extractTextPositions(document);</span>
+    }
+
+    public String pageToBase64Image(InputStream inputStream, int pageIndex) throws IOException {
+<span class="fc" id="L33">        PDDocument document = Loader.loadPDF(inputStream.readAllBytes());</span>
+<span class="fc" id="L34">        PDFRenderer pdfRenderer = new PDFRenderer(document);</span>
+<span class="fc" id="L35">        PDPage page = document.getPage(pageIndex);</span>
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (page != null) {</span>
+<span class="fc" id="L38">            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();</span>
+<span class="fc" id="L39">            BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(pageIndex, 300, ImageType.RGB);</span>
+<span class="fc" id="L40">            ImageIO.write(bufferedImage, &quot;jpg&quot;, byteArrayOutputStream);</span>
+<span class="fc" id="L41">            return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());</span>
+        } else {
+<span class="nc" id="L43">            return null;</span>
+        }
     }
 
     public List&lt;TextPosition&gt; extractTextPositions(PDDocument document) throws IOException {
 
-<span class="fc" id="L36">        List&lt;TextPosition&gt; textPositions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L49">        List&lt;TextPosition&gt; textPositions = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (int page = 1; page &lt; document.getNumberOfPages() + 1; page++) {</span>
-<span class="fc" id="L39">            PDFTextPositionStripper pdfStripper = new PDFTextPositionStripper();</span>
-<span class="fc" id="L40">            pdfStripper.setStartPage(page);</span>
-<span class="fc" id="L41">            pdfStripper.setEndPage(page);</span>
-<span class="fc" id="L42">            pdfStripper.getText(document);</span>
-<span class="fc" id="L43">            List&lt;TextPosition&gt; pageTextPositions = pdfStripper.getTextPositions();</span>
-<span class="fc" id="L44">            final int pageNumber = page;</span>
-<span class="fc" id="L45">            pageTextPositions.forEach(textPosition -&gt; textPosition.setPage(pageNumber));</span>
-<span class="fc" id="L46">            textPositions.addAll(pageTextPositions);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int page = 1; page &lt; document.getNumberOfPages() + 1; page++) {</span>
+<span class="fc" id="L52">            PDFTextPositionStripper pdfStripper = new PDFTextPositionStripper();</span>
+<span class="fc" id="L53">            pdfStripper.setStartPage(page);</span>
+<span class="fc" id="L54">            pdfStripper.setEndPage(page);</span>
+<span class="fc" id="L55">            pdfStripper.getText(document);</span>
+<span class="fc" id="L56">            List&lt;TextPosition&gt; pageTextPositions = pdfStripper.getTextPositions();</span>
+<span class="fc" id="L57">            final int pageNumber = page;</span>
+<span class="fc" id="L58">            pageTextPositions.forEach(textPosition -&gt; textPosition.setPage(pageNumber));</span>
+<span class="fc" id="L59">            textPositions.addAll(pageTextPositions);</span>
         }
 
-<span class="fc" id="L49">        document.close();</span>
-<span class="fc" id="L50">        return textPositions;</span>
+<span class="fc" id="L62">        document.close();</span>
+<span class="fc" id="L63">        return textPositions;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
