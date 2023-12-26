@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.1](https://github.com/ockr-io/ockr-api/compare/v0.2.0...v0.2.1) (2023-12-26)
+
+
+### Features
+
+* add basic setup for puzzle ping pong algorithm ([72e17c4](https://github.com/ockr-io/ockr-api/commit/72e17c4e5f363cd924f11b5f43ed9fdce9c4670b))
+* add new puzzle ping pong implementation ([273124e](https://github.com/ockr-io/ockr-api/commit/273124e20a4318bd3e8dec8ad4086a74fe8ea20a))
+
+
+### Bug Fixes
+
+* use levenshtein distance instead of hamming distance for error calculation ([7d5a0db](https://github.com/ockr-io/ockr-api/commit/7d5a0dba2cf5e98e5dedcb8f048b44a21cbeab5c))
+
 ## [0.2.0](https://github.com/ockr-io/ockr-api/compare/v0.1.0...v0.2.0) (2023-12-08)
 
 
