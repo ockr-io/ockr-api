@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public class PuzzlePingPongAlgorithm extends Algorithm {
 
-    @Autowired
-    ModelService modelService;
+    private final ModelService modelService;
 
-    public PuzzlePingPongAlgorithm() {
+    public PuzzlePingPongAlgorithm(ModelService modelService) {
         super("puzzle-ping-pong");
+        this.modelService = modelService;
         Parameter maxPuzzlesX = Parameter.builder()
                 .name("maxPuzzlesX")
                 .type(ParameterType.INTEGER)

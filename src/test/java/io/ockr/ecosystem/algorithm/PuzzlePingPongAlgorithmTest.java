@@ -2,8 +2,10 @@ package io.ockr.ecosystem.algorithm;
 
 import io.ockr.ecosystem.entity.PuzzlePiece;
 import io.ockr.ecosystem.entity.TextPosition;
+import io.ockr.ecosystem.service.ModelService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -14,9 +16,12 @@ import java.util.List;
 @ComponentScan
 public class PuzzlePingPongAlgorithmTest {
 
+    @Autowired
+    ModelService modelService;
+
     @Test
     public void errorTest() {
-        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
 
         List<TextPosition> textPositions = List.of(
                 TextPosition.builder()
@@ -91,7 +96,7 @@ public class PuzzlePingPongAlgorithmTest {
                         .build()
         );
 
-        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
         List<PuzzlePiece> puzzlePieces = puzzlePingPongAlgorithm.createPuzzle(textPositions, 3, 3);
 
         Assertions.assertEquals(3, puzzlePieces.size());

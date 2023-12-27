@@ -3,7 +3,9 @@ package io.ockr.ecosystem.controller;
 import io.ockr.ecosystem.algorithm.DefaultPuzzleAlgorithm;
 import io.ockr.ecosystem.algorithm.PuzzlePingPongAlgorithm;
 import io.ockr.ecosystem.entity.HashResult;
+import io.ockr.ecosystem.entity.Model;
 import io.ockr.ecosystem.entity.TextPosition;
+import io.ockr.ecosystem.service.ModelService;
 import io.ockr.ecosystem.service.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class PdfController {
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private ModelService modelService;
+
     @PostMapping("/create/qrcode")
     public ResponseEntity<?> createOckrQrCode(@RequestParam("file") MultipartFile file) {
         if (file.getContentType() != null && !file.getContentType().equals("application/pdf")) {
@@ -43,8 +48,20 @@ public class PdfController {
             return ResponseEntity.badRequest().body("PDF file does not contain any text");
         }
 
-        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();
-        HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
+
+        HashResult hashResult;
+        try {
+            hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);
+        } catch (IllegalArgumentException exception) {
+            String modelName = puzzlePingPongAlgorithm.getStringParameter("modelName");
+            String modelVersion = puzzlePingPongAlgorithm.getStringParameter("modelVersion");
+
+            return ResponseEntity.status(404).body("There is no model available matching the given name and version " +
+                    "(" + modelName + ", " + modelVersion + "). " +
+                    "If you did not specify a name nor version, the default model for this algorithm has not been " +
+                    "registered yet. please contact the support or try again later.");
+        }
 
         return ResponseEntity.ok(hashResult.toString());
     }
