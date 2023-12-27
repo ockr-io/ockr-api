@@ -3,7 +3,9 @@
 import io.ockr.ecosystem.algorithm.DefaultPuzzleAlgorithm;
 import io.ockr.ecosystem.algorithm.PuzzlePingPongAlgorithm;
 import io.ockr.ecosystem.entity.HashResult;
+import io.ockr.ecosystem.entity.Model;
 import io.ockr.ecosystem.entity.TextPosition;
+import io.ockr.ecosystem.service.ModelService;
 import io.ockr.ecosystem.service.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,34 +21,49 @@ import java.util.List;
 
 @RestController
 @RequestMapping(&quot;/api/v1/pdf/&quot;)
-<span class="fc" id="L22">public class PdfController {</span>
+<span class="fc" id="L24">public class PdfController {</span>
 
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private ModelService modelService;
+
     @PostMapping(&quot;/create/qrcode&quot;)
     public ResponseEntity&lt;?&gt; createOckrQrCode(@RequestParam(&quot;file&quot;) MultipartFile file) {
-<span class="nc bnc" id="L29" title="All 4 branches missed.">        if (file.getContentType() != null &amp;&amp; !file.getContentType().equals(&quot;application/pdf&quot;)) {</span>
-<span class="nc" id="L30">            return ResponseEntity.badRequest().body(&quot;The provided file is not a PDF file&quot;);</span>
+<span class="nc bnc" id="L34" title="All 4 branches missed.">        if (file.getContentType() != null &amp;&amp; !file.getContentType().equals(&quot;application/pdf&quot;)) {</span>
+<span class="nc" id="L35">            return ResponseEntity.badRequest().body(&quot;The provided file is not a PDF file&quot;);</span>
         }
 
         List&lt;TextPosition&gt; textPositions;
         String base64Image;
         try {
-<span class="nc" id="L36">            textPositions = new ArrayList&lt;&gt;(pdfService.extractTextPositions(file.getInputStream()));</span>
-<span class="nc" id="L37">            base64Image = pdfService.pageToBase64Image(file.getInputStream(), 0);</span>
-<span class="nc" id="L38">        } catch (IOException e) {</span>
-<span class="nc" id="L39">            return ResponseEntity.badRequest().body(&quot;Could not read PDF file&quot;);</span>
-<span class="nc" id="L40">        }</span>
+<span class="nc" id="L41">            textPositions = new ArrayList&lt;&gt;(pdfService.extractTextPositions(file.getInputStream()));</span>
+<span class="nc" id="L42">            base64Image = pdfService.pageToBase64Image(file.getInputStream(), 0);</span>
+<span class="nc" id="L43">        } catch (IOException e) {</span>
+<span class="nc" id="L44">            return ResponseEntity.badRequest().body(&quot;Could not read PDF file&quot;);</span>
+<span class="nc" id="L45">        }</span>
 
-<span class="nc bnc" id="L42" title="All 4 branches missed.">        if (textPositions.size() == 0 || base64Image.length() == 0) {</span>
-<span class="nc" id="L43">            return ResponseEntity.badRequest().body(&quot;PDF file does not contain any text&quot;);</span>
+<span class="nc bnc" id="L47" title="All 4 branches missed.">        if (textPositions.size() == 0 || base64Image.length() == 0) {</span>
+<span class="nc" id="L48">            return ResponseEntity.badRequest().body(&quot;PDF file does not contain any text&quot;);</span>
         }
 
-<span class="nc" id="L46">        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm();</span>
-<span class="nc" id="L47">        HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);</span>
+<span class="nc" id="L51">        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);</span>
 
-<span class="nc" id="L49">        return ResponseEntity.ok(hashResult.toString());</span>
+        HashResult hashResult;
+        try {
+<span class="nc" id="L55">            hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);</span>
+<span class="nc" id="L56">        } catch (IllegalArgumentException exception) {</span>
+<span class="nc" id="L57">            String modelName = puzzlePingPongAlgorithm.getStringParameter(&quot;modelName&quot;);</span>
+<span class="nc" id="L58">            String modelVersion = puzzlePingPongAlgorithm.getStringParameter(&quot;modelVersion&quot;);</span>
+
+<span class="nc" id="L60">            return ResponseEntity.status(404).body(&quot;There is no model available matching the given name and version &quot; +</span>
+                    &quot;(&quot; + modelName + &quot;, &quot; + modelVersion + &quot;). &quot; +
+                    &quot;If you did not specify a name nor version, the default model for this algorithm has not been &quot; +
+                    &quot;registered yet. please contact the support or try again later.&quot;);
+<span class="nc" id="L64">        }</span>
+
+<span class="nc" id="L66">        return ResponseEntity.ok(hashResult.toString());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
