@@ -1,4 +1,5 @@
 package io.ockr.ecosystem.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 @AllArgsConstructor
@@ -6,6 +7,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TextPosition {
     private Integer page;
     private String text;

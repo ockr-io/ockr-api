@@ -54,8 +54,15 @@ public class ModelService {
 
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(JSON, JSONObject.toJSONString(jsonObject));
+
+        String url = model.getUrl() + ":" + model.getPort() + "/inference";
+
+        if (!url.contains("://")) {
+            url = "http://" + url;
+        }
+
         Request request = new Request.Builder()
-                .url(model.getUrl() + ":" + model.getPort() + "/inference")
+                .url(url)
                 .post(body)
                 .build();
 

@@ -1,6 +1,7 @@
 package io.ockr.ecosystem.algorithm;
 
 import io.ockr.ecosystem.entity.HashResult;
+import io.ockr.ecosystem.entity.Puzzle;
 import io.ockr.ecosystem.entity.PuzzlePiece;
 import io.ockr.ecosystem.entity.TextPosition;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -182,7 +183,7 @@ public abstract class Algorithm {
         return puzzlePieces;
     }
 
-    protected List<PuzzlePiece> createPuzzle(List<TextPosition> textPositions, int sliceX, int sliceY) {
+    protected Puzzle createPuzzle(List<TextPosition> textPositions, int sliceX, int sliceY) {
         double minX = textPositions.stream()
                 .map(TextPosition::getX).min(Double::compareTo).orElse(0.0);
         double maxX = textPositions.stream()
@@ -222,7 +223,13 @@ public abstract class Algorithm {
             }
         }
 
-        return mergePuzzlePieces(puzzlePieces);
+        return Puzzle.builder()
+                .puzzlePieces(mergePuzzlePieces(puzzlePieces))
+                .itemWidth(sliceWidth)
+                .itemHeight(sliceHeight)
+                .gridWidth(areaWidth)
+                .gridHeight(areaHeight)
+                .build();
     }
 
     protected Boolean getBooleanParameter(String name) {

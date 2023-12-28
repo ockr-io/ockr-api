@@ -9,6 +9,7 @@ import io.ockr.ecosystem.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -165,19 +166,18 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
 
         InferenceResponse inferenceResponse = this.ping(model, base64Image, modelVersion, parameters);
 
-        List<PuzzlePiece> puzzlePieces = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);
-        calculatePuzzleError(puzzlePieces, inferenceResponse.getPrediction());
+        Puzzle puzzle = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);
+        calculatePuzzleError(puzzle, inferenceResponse.getPrediction());
 
-        double error = puzzlePieces.stream().map(PuzzlePiece::getError).reduce(0.0, Double::sum);
-
+        double error = puzzle.getError();
         parameters = inferenceResponse.getParameters();
 
         int iteration = 0;
         while (iteration < maxIterations || error > 0) {
-            Map<String, Object> newParameters = this.pong(puzzlePieces, parameters);
+            Map<String, Object> newParameters = this.pong(puzzle.getPuzzlePieces(), parameters);
             inferenceResponse = this.ping(model, base64Image, modelVersion, newParameters);
-            calculatePuzzleError(puzzlePieces, inferenceResponse.getPrediction());
-            double newError = puzzlePieces.stream().map(PuzzlePiece::getError).reduce(0.0, Double::sum);
+            calculatePuzzleError(puzzle, inferenceResponse.getPrediction());
+            double newError = puzzle.getError();
 
             if (newError < error) {
                 error = newError;
@@ -188,7 +188,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         }
 
         if (error > 0 && provideHelp) {
-            this.provideHelp(puzzlePieces, inferenceResponse.getPrediction());
+            this.provideHelp(puzzle.getPuzzlePieces(), inferenceResponse.getPrediction());
         }
 
         HashResult result = new HashResult();
@@ -202,7 +202,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         String text = textPositions.stream()
                 .reduce("", (s, textPosition) -> s + textPosition.getText(), String::concat);
         result.setHash(this.hash(text));
-        result.setPuzzlePieces(puzzlePieces);
+        result.setPuzzlePieces(puzzle.getPuzzlePieces());
 
         if (result.toString().length() > MAX_QR_CODE_CHARS) {
             throw new RuntimeException("The QR code content is too big. The limit is " +
@@ -234,7 +234,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
                 }
             }
             match = possibleMatch;
-        } else {
+        } else if (matches.size() == 1) {
             // check if the match is within the bounding box
             double overlap = overlap(matches.get(0), textPosition);
             if (overlap > 0) {
@@ -300,13 +300,41 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         }
     }
 
-    private void calculatePuzzleError(List<PuzzlePiece> puzzlePieces, List<TextPosition> prediction) {
+    protected void calculatePuzzleError(Puzzle puzzle, List<TextPosition> prediction) {
+        List<PuzzlePiece> puzzlePieces = puzzle.getPuzzlePieces();
         for (PuzzlePiece puzzlePiece : puzzlePieces) {
-            List<TextPosition> detectionUnderPuzzleArea = prediction.stream()
-                    .filter(textPosition -> textPosition.getX() >= puzzlePiece.getX() && textPosition.getX() <= puzzlePiece.getX() + puzzlePiece.getWidth())
-                    .filter(textPosition -> textPosition.getY() >= puzzlePiece.getY() && textPosition.getY() <= puzzlePiece.getY() + puzzlePiece.getHeight())
+            double puzzlePieceX = puzzlePiece.getX() * puzzle.getItemWidth();
+            double puzzlePieceY = puzzlePiece.getY() * puzzle.getItemHeight();
+            List<TextPosition> predictionUnderPuzzlePiece = prediction.stream()
+                    .filter(textPosition -> textPosition.getX() >= puzzlePieceX &&
+                            textPosition.getX() <= puzzlePieceX + puzzlePiece.getWidth() &&
+                            textPosition.getY() >= puzzlePieceY &&
+                            textPosition.getY() <= puzzlePieceY + puzzlePiece.getHeight())
                     .toList();
-            puzzlePiece.setError(this.error(detectionUnderPuzzleArea, puzzlePiece.getTextPositions()));
+
+            List<TextPosition> puzzlePieceTextPositions = puzzlePiece.getTextPositions();
+            List<Integer> matches = new ArrayList<>();
+
+            // find matches and calculate error
+            for (TextPosition textPosition : puzzlePieceTextPositions) {
+                TextPosition match = findMatch(textPosition, predictionUnderPuzzlePiece);
+                if (match == null) {
+                    // Get full bounding box error if no match is found
+                    puzzlePiece.setError(puzzlePiece.getError() + area(textPosition));
+                } else {
+                    double relativeOverlap = relativeOverlap(match, textPosition);
+                    puzzlePiece.setError(puzzlePiece.getError() + (1 - relativeOverlap) * textPosition.getText().length());
+                    puzzlePiece.setError(puzzlePiece.getError() + levenshteinDistance(match.getText(), textPosition.getText()));
+                    matches.add(predictionUnderPuzzlePiece.indexOf(match));
+                }
+            }
+
+            // add error for all remaining text positions
+            for (int i= 0; i < predictionUnderPuzzlePiece.size(); i++) {
+                if (!matches.contains(i)) {
+                    puzzlePiece.setError(puzzlePiece.getError() + area(predictionUnderPuzzlePiece.get(i)));
+                }
+            }
         }
     }
 

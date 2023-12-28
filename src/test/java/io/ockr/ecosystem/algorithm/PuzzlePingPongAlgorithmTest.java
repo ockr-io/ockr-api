@@ -1,5 +1,6 @@
 package io.ockr.ecosystem.algorithm;
 
+import io.ockr.ecosystem.entity.Puzzle;
 import io.ockr.ecosystem.entity.PuzzlePiece;
 import io.ockr.ecosystem.entity.TextPosition;
 import io.ockr.ecosystem.service.ModelService;
@@ -97,7 +98,8 @@ public class PuzzlePingPongAlgorithmTest {
         );
 
         PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
-        List<PuzzlePiece> puzzlePieces = puzzlePingPongAlgorithm.createPuzzle(textPositions, 3, 3);
+        Puzzle puzzle = puzzlePingPongAlgorithm.createPuzzle(textPositions, 3, 3);
+        List<PuzzlePiece> puzzlePieces = puzzle.getPuzzlePieces();
 
         Assertions.assertEquals(3, puzzlePieces.size());
         Assertions.assertEquals(320, puzzlePieces.get(0).getWidth());
@@ -209,6 +211,72 @@ public class PuzzlePingPongAlgorithmTest {
         Assertions.assertEquals("l", puzzlePieces.get(0).getHelper().get(1).getPrediction());
         Assertions.assertEquals(9, puzzlePieces.get(0).getHelper().get(1).getStart());
         Assertions.assertEquals(9, puzzlePieces.get(0).getHelper().get(1).getEnd());
+    }
+
+    @Test
+    public void calculatePuzzleErrorTest() {
+        List<TextPosition> prediction = List.of(
+                TextPosition.builder()
+                        .x(1.0)
+                        .y(1.0)
+                        .width(110.0)
+                        .height(100.0)
+                        .text("Hello World")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(25.0)
+                        .y(115.0)
+                        .width(155.0)
+                        .height(110.0)
+                        .text("I hope you are doing weII")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(120.0)
+                        .y(240.0)
+                        .width(200.0)
+                        .height(100.0)
+                        .text("In a perfect w0rld n0 0ne would need no help")
+                        .page(0)
+                        .build()
+        );
+
+        List<TextPosition> textPositions = List.of(
+                TextPosition.builder()
+                        .x(0.0)
+                        .y(0.0)
+                        .width(100.0)
+                        .height(100.0)
+                        .text("Hello World")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(20.0)
+                        .y(120.0)
+                        .width(150.0)
+                        .height(100.0)
+                        .text("I hope you are doing well")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(120.0)
+                        .y(240.0)
+                        .width(200.0)
+                        .height(100.0)
+                        .text("In a perfect world no one would need no help")
+                        .page(0)
+                        .build()
+        );
+
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
+        Puzzle puzzle = puzzlePingPongAlgorithm.createPuzzle(textPositions, 3, 3);
+        puzzlePingPongAlgorithm.calculatePuzzleError(puzzle, prediction);
+        List<PuzzlePiece> puzzlePieces = puzzle.getPuzzlePieces();
+
+        Assertions.assertEquals(1.1989999999999998, puzzlePieces.get(0).getError());
+        Assertions.assertEquals(5.739002932551319, puzzlePieces.get(1).getError());
+        Assertions.assertEquals(3.0, puzzlePieces.get(2).getError());
     }
 
 }
