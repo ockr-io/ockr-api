@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextPosition.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ockr API</a> &gt; <a href="index.source.html" class="el_package">io.ockr.ecosystem.entity</a> &gt; <span class="el_source">TextPosition.java</span></div><h1>TextPosition.java</h1><pre class="source lang-java linenums">package io.ockr.ecosystem.entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
-<span class="fc" id="L4">@AllArgsConstructor</span>
-<span class="fc" id="L5">@NoArgsConstructor</span>
-<span class="pc" id="L6">@Builder</span>
+<span class="fc" id="L5">@AllArgsConstructor</span>
+<span class="fc" id="L6">@NoArgsConstructor</span>
+<span class="pc" id="L7">@Builder</span>
 @Getter
-<span class="fc" id="L8">@Setter</span>
+<span class="fc" id="L9">@Setter</span>
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TextPosition {
-<span class="fc" id="L10">    private Integer page;</span>
-<span class="fc" id="L11">    private String text;</span>
-<span class="fc" id="L12">    private Double x;</span>
-<span class="fc" id="L13">    private Double y;</span>
-<span class="fc" id="L14">    private Double width;</span>
-<span class="fc" id="L15">    private Double height;</span>
+<span class="fc" id="L12">    private Integer page;</span>
+<span class="fc" id="L13">    private String text;</span>
+<span class="fc" id="L14">    private Double x;</span>
+<span class="fc" id="L15">    private Double y;</span>
+<span class="fc" id="L16">    private Double width;</span>
+<span class="fc" id="L17">    private Double height;</span>
 
     @Override
     public boolean equals(Object textPosition) {
-<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        return textPosition.getClass() == this.getClass() &amp;&amp;</span>
-<span class="pc bpc" id="L20" title="1 of 2 branches missed.">                this.text.equals(((TextPosition) textPosition).getText()) &amp;&amp;</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">                this.x.equals(((TextPosition) textPosition).getX()) &amp;&amp;</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">                this.y.equals(((TextPosition) textPosition).getY()) &amp;&amp;</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">                this.width.equals(((TextPosition) textPosition).getWidth()) &amp;&amp;</span>
-<span class="pc bnc" id="L24" title="All 2 branches missed.">                this.height.equals(((TextPosition) textPosition).getHeight());</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">        return textPosition.getClass() == this.getClass() &amp;&amp;</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">                this.text.equals(((TextPosition) textPosition).getText()) &amp;&amp;</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">                this.x.equals(((TextPosition) textPosition).getX()) &amp;&amp;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">                this.y.equals(((TextPosition) textPosition).getY()) &amp;&amp;</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">                this.width.equals(((TextPosition) textPosition).getWidth()) &amp;&amp;</span>
+<span class="pc bnc" id="L26" title="All 2 branches missed.">                this.height.equals(((TextPosition) textPosition).getHeight());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

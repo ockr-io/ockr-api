@@ -54,38 +54,45 @@ public class ModelService {
 
 <span class="fc" id="L55">        MediaType JSON = MediaType.parse(&quot;application/json; charset=utf-8&quot;);</span>
 <span class="fc" id="L56">        RequestBody body = RequestBody.create(JSON, JSONObject.toJSONString(jsonObject));</span>
-<span class="fc" id="L57">        Request request = new Request.Builder()</span>
-<span class="fc" id="L58">                .url(model.getUrl() + &quot;:&quot; + model.getPort() + &quot;/inference&quot;)</span>
-<span class="fc" id="L59">                .post(body)</span>
-<span class="fc" id="L60">                .build();</span>
 
-<span class="fc" id="L62">        Response response = client.newCall(request).execute();</span>
-<span class="fc" id="L63">        ObjectMapper objectMapper = new ObjectMapper();</span>
-<span class="fc" id="L64">        return objectMapper.readValue(response.body().string(), InferenceResponse.class);</span>
+<span class="fc" id="L58">        String url = model.getUrl() + &quot;:&quot; + model.getPort() + &quot;/inference&quot;;</span>
+
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (!url.contains(&quot;://&quot;)) {</span>
+<span class="nc" id="L61">            url = &quot;http://&quot; + url;</span>
+        }
+
+<span class="fc" id="L64">        Request request = new Request.Builder()</span>
+<span class="fc" id="L65">                .url(url)</span>
+<span class="fc" id="L66">                .post(body)</span>
+<span class="fc" id="L67">                .build();</span>
+
+<span class="fc" id="L69">        Response response = client.newCall(request).execute();</span>
+<span class="fc" id="L70">        ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="fc" id="L71">        return objectMapper.readValue(response.body().string(), InferenceResponse.class);</span>
     }
 
     public List&lt;Model&gt; getAllModels() {
-<span class="fc" id="L68">        return modelRepository.findAll();</span>
+<span class="fc" id="L75">        return modelRepository.findAll();</span>
     }
 
     public Model getModelByName(String name) {
-<span class="fc" id="L72">        return modelRepository.findByName(name).orElse(null);</span>
+<span class="fc" id="L79">        return modelRepository.findByName(name).orElse(null);</span>
     }
 
     public void saveModel(Model model) {
-<span class="fc" id="L76">        modelRepository.save(model);</span>
-<span class="fc" id="L77">    }</span>
+<span class="fc" id="L83">        modelRepository.save(model);</span>
+<span class="fc" id="L84">    }</span>
 
     public void saveAll(List&lt;Model&gt; models) {
-<span class="fc" id="L80">        modelRepository.saveAll(models);</span>
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L87">        modelRepository.saveAll(models);</span>
+<span class="fc" id="L88">    }</span>
 
     public void deleteModelByName(String name) {
-<span class="nc" id="L84">        modelRepository.deleteById(name);</span>
-<span class="nc" id="L85">    }</span>
+<span class="nc" id="L91">        modelRepository.deleteById(name);</span>
+<span class="nc" id="L92">    }</span>
 
     public void deleteAllModels() {
-<span class="fc" id="L88">        modelRepository.deleteAll();</span>
-<span class="fc" id="L89">    }</span>
+<span class="fc" id="L95">        modelRepository.deleteAll();</span>
+<span class="fc" id="L96">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
