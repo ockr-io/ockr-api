@@ -16,7 +16,7 @@ public class HashResult {
 <span class="nc" id="L16">    private String algorithm;</span>
 <span class="fc" id="L17">    private List&lt;Parameter&gt; parameters;</span>
 
-<span class="nc" id="L19">    private List&lt;PuzzlePiece&gt; puzzlePieces;</span>
+<span class="fc" id="L19">    private List&lt;PuzzlePiece&gt; puzzlePieces;</span>
 
     @Override
     public String toString() {
@@ -26,7 +26,7 @@ public class HashResult {
 <span class="fc bfc" id="L26" title="All 2 branches covered.">        for (Parameter parameter : parameters) {</span>
 <span class="fc" id="L27">            content.append(parameter.getName()).append(&quot;$&quot;);</span>
 <span class="fc" id="L28">            String value = parameter.getValue();</span>
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">            if (value == null) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">            if (value == null) {</span>
 <span class="fc" id="L30">                value = parameter.getDefaultValue();</span>
             }
 <span class="fc" id="L32">            content.append(value).append(&quot;$&quot;);</span>

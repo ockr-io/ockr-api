@@ -15,11 +15,11 @@ public class Puzzle {
 <span class="fc" id="L15">    List&lt;PuzzlePiece&gt; puzzlePieces = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L16">    double itemWidth;</span>
 <span class="fc" id="L17">    double itemHeight;</span>
-<span class="nc" id="L18">    double gridWidth;</span>
-<span class="nc" id="L19">    double gridHeight;</span>
+<span class="fc" id="L18">    double gridWidth;</span>
+<span class="fc" id="L19">    double gridHeight;</span>
 
     public double getError() {
-<span class="nc" id="L22">        return puzzlePieces.stream().map(PuzzlePiece::getError).reduce(0.0, Double::sum);</span>
+<span class="fc" id="L22">        return puzzlePieces.stream().map(PuzzlePiece::getError).reduce(0.0, Double::sum);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
