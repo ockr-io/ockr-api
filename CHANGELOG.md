@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.4](https://github.com/ockr-io/ockr-api/compare/v0.2.3...v0.2.4) (2023-12-29)
+
+
+### Bug Fixes
+
+* calculate puzzle error does now respect false negatives ([fc57f91](https://github.com/ockr-io/ockr-api/commit/fc57f91db41973e5ccf80d5f6514b115c6fe08e8))
+* keep minX and minY in mind, when slicing the puzzle pieces ([c9352fb](https://github.com/ockr-io/ockr-api/commit/c9352fb6c153f0aa3ddd23d4602748d4c6abb066))
+* modelService was not available in compute method ([19d54fc](https://github.com/ockr-io/ockr-api/commit/19d54fcff0eaeb908121874f493c82b6f9cb92e1))
+
 ## [0.2.3](https://github.com/ockr-io/ockr-api/compare/v0.2.2...v0.2.3) (2023-12-26)
 
 
