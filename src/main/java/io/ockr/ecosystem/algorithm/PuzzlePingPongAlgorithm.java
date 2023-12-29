@@ -204,6 +204,11 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         result.setHash(this.hash(text));
         result.setPuzzlePieces(puzzle.getPuzzlePieces());
 
+        result.setGridWidth(puzzle.getGridWidth());
+        result.setGridHeight(puzzle.getGridHeight());
+        result.setPuzzleWidth(puzzle.getItemWidth());
+        result.setPuzzleHeight(puzzle.getItemHeight());
+
         if (result.toString().length() > MAX_QR_CODE_CHARS) {
             throw new RuntimeException("The QR code content is too big. The limit is " +
                     MAX_QR_CODE_CHARS + " characters and the current content has " +

@@ -439,6 +439,38 @@ public class PuzzlePingPongAlgorithmTest {
         );
         HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);
         Assertions.assertEquals(3, hashResult.getPuzzlePieces().size());
-    }
 
+        Assertions.assertEquals(1, hashResult.getPuzzlePieces().get(0).getTextPositions().size());
+        Assertions.assertEquals("Hello World", hashResult.getPuzzlePieces().get(0).getTextPositions().get(0).getText());
+        Assertions.assertEquals(1, hashResult.getPuzzlePieces().get(1).getTextPositions().size());
+        Assertions.assertEquals("How are you", hashResult.getPuzzlePieces().get(1).getTextPositions().get(0).getText());
+        Assertions.assertEquals(1, hashResult.getPuzzlePieces().get(2).getTextPositions().size());
+        Assertions.assertEquals("1", hashResult.getPuzzlePieces().get(2).getTextPositions().get(0).getText());
+
+        Assertions.assertEquals(334, hashResult.getGridWidth());
+        Assertions.assertEquals(346, hashResult.getGridHeight());
+
+        Assertions.assertEquals(83.5, hashResult.getPuzzleWidth());
+        Assertions.assertEquals(43.25, hashResult.getPuzzleHeight());
+
+        Assertions.assertEquals(0, hashResult.getPuzzlePieces().get(0).getX());
+        Assertions.assertEquals(0, hashResult.getPuzzlePieces().get(0).getY());
+        Assertions.assertEquals(334, hashResult.getPuzzlePieces().get(0).getWidth());
+        Assertions.assertEquals(43.25, hashResult.getPuzzlePieces().get(0).getHeight());
+
+        Assertions.assertEquals(0, hashResult.getPuzzlePieces().get(1).getX());
+        Assertions.assertEquals(1, hashResult.getPuzzlePieces().get(1).getY());
+        Assertions.assertEquals(334, hashResult.getPuzzlePieces().get(1).getWidth());
+        Assertions.assertEquals(216.25, hashResult.getPuzzlePieces().get(1).getHeight());
+
+        Assertions.assertEquals(0, hashResult.getPuzzlePieces().get(2).getX());
+        Assertions.assertEquals(6, hashResult.getPuzzlePieces().get(2).getY());
+        Assertions.assertEquals(334, hashResult.getPuzzlePieces().get(2).getWidth());
+        Assertions.assertEquals(86.5, hashResult.getPuzzlePieces().get(2).getHeight());
+
+        double totalPuzzleHeight = hashResult.getPuzzlePieces().get(0).getHeight()
+                + hashResult.getPuzzlePieces().get(1).getHeight()
+                + hashResult.getPuzzlePieces().get(2).getHeight();
+        Assertions.assertEquals(hashResult.getGridHeight(), totalPuzzleHeight);
+    }
 }

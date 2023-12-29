@@ -18,10 +18,19 @@ public class HashResult {
 
     private List<PuzzlePiece> puzzlePieces;
 
+    private double gridWidth;
+    private double gridHeight;
+    private double puzzleWidth;
+    private double puzzleHeight;
+
     @Override
     public String toString() {
         StringBuilder content = new StringBuilder(hash + "|");
         content.append(algorithm).append("|");
+        content.append(gridWidth).append("|");
+        content.append(gridHeight).append("|");
+        content.append(puzzleWidth).append("|");
+        content.append(puzzleHeight).append("|");
 
         for (Parameter parameter : parameters) {
             content.append(parameter.getName()).append("$");
@@ -45,24 +54,36 @@ public class HashResult {
         String[] parts = text.split("\\|");
         String hash = parts[0];
         String algorithm = parts[1];
-        String[] parameters = parts[2].split("\\$");
+        double gridWidth = Double.parseDouble(parts[2]);
+        double gridHeight = Double.parseDouble(parts[3]);
+        double puzzleWidth = Double.parseDouble(parts[4]);
+        double puzzleHeight = Double.parseDouble(parts[5]);
+        String[] parameters = parts[6].split("\\$");
         List<Parameter> parameterList = new ArrayList<>();
+
         for (int i = 0; i < parameters.length; i += 2) {
             parameterList.add(Parameter.builder()
                     .name(parameters[i])
                     .value(parameters[i + 1])
                     .build());
         }
-        String[] puzzlePieces = parts[3].split("&");
+
+        String[] puzzlePieces = parts[7].split("&");
         List<PuzzlePiece> puzzlePieceList = new ArrayList<>();
+
         for (String puzzlePiece : puzzlePieces) {
             puzzlePieceList.add(PuzzlePiece.fromString(puzzlePiece));
         }
+
         return HashResult.builder()
                 .hash(hash)
                 .algorithm(algorithm)
                 .parameters(parameterList)
                 .puzzlePieces(puzzlePieceList)
+                .gridWidth(gridWidth)
+                .gridHeight(gridHeight)
+                .puzzleWidth(puzzleWidth)
+                .puzzleHeight(puzzleHeight)
                 .build();
     }
 }

@@ -75,6 +75,11 @@ public class DefaultPuzzleAlgorithm extends Algorithm {
 
         result.setPuzzlePieces(puzzlePieces);
 
+        result.setGridWidth(areaWidth);
+        result.setGridHeight(areaHeight);
+        result.setPuzzleWidth(sliceWidth);
+        result.setPuzzleHeight(sliceHeight);
+
         if (result.toString().length() > MAX_QR_CODE_CHARS) {
             throw new RuntimeException("The QR code content is too big. The limit is " +
                     MAX_QR_CODE_CHARS + " characters and the current content has " +
