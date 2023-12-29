@@ -204,8 +204,10 @@ public abstract class Algorithm {
                 double puzzlePositionX = x * sliceWidth;
                 double puzzlePositionY = y * sliceHeight;
                 List<TextPosition> textUnderPuzzleArea = textPositions.stream()
-                        .filter(textPosition -> textPosition.getX() >= puzzlePositionX && textPosition.getX() <= puzzlePositionX + sliceWidth)
-                        .filter(textPosition -> textPosition.getY() >= puzzlePositionY && textPosition.getY() <= puzzlePositionY + sliceHeight)
+                        .filter(textPosition -> (textPosition.getX() - minX) >= puzzlePositionX &&
+                                (textPosition.getX() - minX) <= puzzlePositionX + sliceWidth)
+                        .filter(textPosition -> (textPosition.getY() - minY) >= puzzlePositionY &&
+                                (textPosition.getY() - minY) <= puzzlePositionY + sliceHeight)
                         .toList();
 
                 String puzzleText = textUnderPuzzleArea.stream()

@@ -173,7 +173,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         parameters = inferenceResponse.getParameters();
 
         int iteration = 0;
-        while (iteration < maxIterations || error > 0) {
+        while (iteration < maxIterations && error > 0) {
             Map<String, Object> newParameters = this.pong(puzzle.getPuzzlePieces(), parameters);
             inferenceResponse = this.ping(model, base64Image, modelVersion, newParameters);
             calculatePuzzleError(puzzle, inferenceResponse.getPrediction());

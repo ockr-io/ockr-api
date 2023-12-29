@@ -1,24 +1,100 @@
 package io.ockr.ecosystem.algorithm;
 
-import io.ockr.ecosystem.entity.Puzzle;
-import io.ockr.ecosystem.entity.PuzzlePiece;
-import io.ockr.ecosystem.entity.TextPosition;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import io.ockr.ecosystem.entity.*;
+import io.ockr.ecosystem.entity.api.InferenceResponse;
 import io.ockr.ecosystem.service.ModelService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @SpringBootTest
 @ComponentScan
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PuzzlePingPongAlgorithmTest {
 
     @Autowired
     ModelService modelService;
+
+    private WireMockServer wireMockServer;
+
+    @BeforeAll
+    public void setup() throws JsonProcessingException {
+        modelService.deleteAllModels();
+        wireMockServer = new WireMockServer(6565);
+        wireMockServer.start();
+
+        modelService.saveModel(Model.builder()
+                        .name("PP-OCRv3")
+                        .port(6565)
+                        .url("http://localhost")
+                        .build());
+
+        InferenceResponse inferenceResponse = InferenceResponse.builder()
+                .ocrModelName("PP-OCRv3")
+                .ocrModelVersion("latest")
+                .parameters(Map.of(
+                        "segmentation_threshold", 0.3,
+                        "detection_threshold", 0.6,
+                        "unclip_ratio", 3,
+                        "max_candidates", 1000,
+                        "min_size", 3
+                ))
+                .prediction(List.of(
+                        TextPosition.builder()
+                                .x(30.0)
+                                .y(60.0)
+                                .width(174.0)
+                                .height(30.0)
+                                .text("Hello World")
+                                .page(0)
+                                .build(),
+                        TextPosition.builder()
+                                .x(137.0)
+                                .y(295.0)
+                                .width(226.0)
+                                .height(42.0)
+                                .text("How are you")
+                                .page(0)
+                                .build(),
+                        TextPosition.builder()
+                                .x(30.0)
+                                .y(374.0)
+                                .width(20.0)
+                                .height(30.0)
+                                .text("1")
+                                .page(0)
+                                .build()
+                ))
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        wireMockServer.stubFor(post(urlEqualTo("/inference"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(mapper.writeValueAsString(inferenceResponse))));
+    }
+
+    @AfterAll
+    public void teardown() {
+        modelService.deleteAllModels();
+        wireMockServer.stop();
+    }
 
     @Test
     public void errorTest() {
@@ -277,6 +353,92 @@ public class PuzzlePingPongAlgorithmTest {
         Assertions.assertEquals(1.1989999999999998, puzzlePieces.get(0).getError());
         Assertions.assertEquals(5.739002932551319, puzzlePieces.get(1).getError());
         Assertions.assertEquals(3.0, puzzlePieces.get(2).getError());
+    }
+
+    private String loadFileContent(String filePath) throws IOException {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + filePath);
+            }
+            byte[] fileBytes = inputStream.readAllBytes();
+            return new String(fileBytes, StandardCharsets.UTF_8);
+        }
+    }
+
+    @Test
+    public void example1PuzzleTest() {
+        List<TextPosition> textPositions = List.of(
+                TextPosition.builder()
+                        .x(30.0)
+                        .y(60.0)
+                        .width(178.0)
+                        .height(32.0)
+                        .text("Hello World")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(138.0)
+                        .y(296.0)
+                        .width(226.0)
+                        .height(42.0)
+                        .text("How are you")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(32.0)
+                        .y(374.0)
+                        .width(22.0)
+                        .height(32.0)
+                        .text("1")
+                        .page(0)
+                        .build()
+        );
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
+        Puzzle puzzle = puzzlePingPongAlgorithm.createPuzzle(textPositions, 3, 3);
+        Assertions.assertEquals(334, puzzle.getGridWidth());
+        Assertions.assertEquals(346, puzzle.getGridHeight());
+        Assertions.assertEquals(111.33333333333333, puzzle.getItemWidth());
+        Assertions.assertEquals(115.33333333333333, puzzle.getItemHeight());
+        Assertions.assertEquals(2, puzzle.getPuzzlePieces().size());
+        Assertions.assertEquals(1, puzzle.getPuzzlePieces().get(0).getTextPositions().size());
+        Assertions.assertEquals("Hello World", puzzle.getPuzzlePieces().get(0).getTextPositions().get(0).getText());
+        Assertions.assertEquals(2, puzzle.getPuzzlePieces().get(1).getTextPositions().size());
+        Assertions.assertEquals("How are you", puzzle.getPuzzlePieces().get(1).getTextPositions().get(0).getText());
+        Assertions.assertEquals("1", puzzle.getPuzzlePieces().get(1).getTextPositions().get(1).getText());
+    }
+
+    @Test
+    public void calculateTest() throws IOException {
+        String base64Image = loadFileContent("text/example_1.txt");
+        PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
+        List<TextPosition> textPositions = List.of(
+                TextPosition.builder()
+                        .x(30.0)
+                        .y(60.0)
+                        .width(178.0)
+                        .height(32.0)
+                        .text("Hello World")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(138.0)
+                        .y(296.0)
+                        .width(226.0)
+                        .height(42.0)
+                        .text("How are you")
+                        .page(0)
+                        .build(),
+                TextPosition.builder()
+                        .x(32.0)
+                        .y(374.0)
+                        .width(22.0)
+                        .height(32.0)
+                        .text("1")
+                        .page(0)
+                        .build()
+        );
+        HashResult hashResult = puzzlePingPongAlgorithm.compute(textPositions, base64Image);
+        Assertions.assertEquals(3, hashResult.getPuzzlePieces().size());
     }
 
 }
