@@ -355,13 +355,13 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
 <span class="pc bpc" id="L355" title="1 of 2 branches missed.">        if (parameterNames.size() &gt; 0) {</span>
 <span class="fc" id="L356">            Object parameter = newParameters.get(parameterNames.get(0));</span>
 <span class="pc bpc" id="L357" title="1 of 2 branches missed.">            if (parameter instanceof Integer) {</span>
-<span class="nc" id="L358">                int value = (int) parameter;</span>
-<span class="nc bnc" id="L359" title="All 2 branches missed.">                value += Math.random() &gt; 0.5 ? 1 : -1;</span>
-<span class="nc" id="L360">                newParameters.replace(parameterNames.get(0), value);</span>
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">            } else if (parameter instanceof Double) {</span>
-<span class="fc" id="L362">                double value = (double) parameter;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">                value += Math.random() &gt; 0.5 ? 0.1 : -0.1;</span>
-<span class="fc" id="L364">                newParameters.replace(parameterNames.get(0), value);</span>
+<span class="fc" id="L358">                int value = (int) parameter;</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">                value += Math.random() &gt; 0.5 ? 1 : -1;</span>
+<span class="fc" id="L360">                newParameters.replace(parameterNames.get(0), value);</span>
+<span class="pc bnc" id="L361" title="All 2 branches missed.">            } else if (parameter instanceof Double) {</span>
+<span class="nc" id="L362">                double value = (double) parameter;</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">                value += Math.random() &gt; 0.5 ? 0.1 : -0.1;</span>
+<span class="nc" id="L364">                newParameters.replace(parameterNames.get(0), value);</span>
             }
         }
 
