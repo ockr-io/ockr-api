@@ -26,9 +26,9 @@ java -jar target/ockr-api-0.2.4.jar
 - After starting the container, it automatically fetches the needed onnx models from the [ockr-model-zoo](https://github.com/ockr-io/ockr-model-zoo) and registers itself at the ockr-api
 - Now you can send a POST request to the ockr-api with the pdf file in the request body:
 
-[POST] localhost:9090/api/v1/pdf/create/qrcode
-
 ```mulitpart/form-data
+* [POST] localhost:9090/api/v1/pdf/create/qrcode
+
 {
   "file": <file>
 }
