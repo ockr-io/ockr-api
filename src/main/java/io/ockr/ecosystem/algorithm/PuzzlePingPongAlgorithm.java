@@ -254,8 +254,13 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
             if (puzzlePiece.getError() > 0) {
                 for (TextPosition textPosition : puzzlePiece.getTextPositions()) {
                     TextPosition match = findMatch(textPosition, prediction);
-                    double distance = levenshteinDistance(textPosition.getText(), match.getText());
-                    if (match != null && distance > 0) {
+                    double distance = 0.0;
+
+                    if (match != null) {
+                        distance = levenshteinDistance(textPosition.getText(), match.getText());
+                    }
+
+                    if (distance > 0) {
                         double distanceThreshold =  textPosition.getText().length() / 4.0;
                         if (distance > distanceThreshold) {
                                 puzzlePiece.getHelper().add(TextPositionHelper.builder()
