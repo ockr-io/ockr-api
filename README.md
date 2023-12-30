@@ -10,7 +10,7 @@
 
 Ockr aims to set a standard for creating machine-readable and reliable documents, enabling the verification of their authenticity
 
-## 🥁Getting Started
+## Getting Started 🥁
 
 ```zsh
 git clone https://github.com/ockr-io/ockr-api.git
@@ -19,7 +19,7 @@ cd ockr-api
 java -jar target/ockr-api-0.2.4.jar
 ```
 
-## 🧐How to use
+## How to use 🧐
 
 - Follow the steps above to start the application 
 - Checkout [ockr-ocr-container](https://github.com/ockr-io/ockr-ocr-container) and follow the instructions
@@ -36,6 +36,6 @@ java -jar target/ockr-api-0.2.4.jar
 
 - The response contains the QR code content in text form that need to be placed on the document and will ensure that the document is machine-readable in the future 🤖
 
-## 🤓Documentation
+## Documentation 🤓
 
 The documentation is available after starting the application at [http://localhost:9090/swagger-ui.html](http://localhost:9090/swagger-ui.html)
