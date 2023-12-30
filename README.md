@@ -22,7 +22,7 @@ java -jar target/ockr-api-0.2.4.jar
 ## How to use 🧐
 
 - Follow the steps above to start the application 
-- Checkout [ockr-ocr-container](https://github.com/ockr-io/ockr-ocr-container) and follow the instructions
+- Checkout the [ockr-ocr-container](https://github.com/ockr-io/ockr-ocr-container) and follow the instructions
 - After starting the container, it automatically fetches the needed onnx models from the [ockr-model-zoo](https://github.com/ockr-io/ockr-model-zoo) and registers itself at the ockr-api
 - Now you can send a POST request to the ockr-api with the pdf file in the request body:
 
