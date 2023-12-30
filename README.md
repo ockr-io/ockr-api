@@ -16,7 +16,7 @@ Ockr aims to set a standard for creating machine-readable and reliable documents
 git clone https://github.com/ockr-io/ockr-api.git
 cd ockr-api
 ./mvnw clean package
-java -jar target/ockr-api-0.2.4.jar
+java -jar target/ockr-api-0.3.0.jar
 ```
 
 ## How to use 🧐
