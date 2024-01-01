@@ -6,10 +6,12 @@ import io.ockr.ecosystem.entity.TextPosition;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.ockr.ecosystem.enums.Algorithm.DEFAULT_PUZZLE;
+
 public class DefaultPuzzleAlgorithm extends Algorithm {
 
     public DefaultPuzzleAlgorithm() {
-        super("default-puzzle");
+        super(DEFAULT_PUZZLE.getName());
         Parameter xSlice = Parameter.builder()
                 .name("xSlice")
                 .type(ParameterType.INTEGER)

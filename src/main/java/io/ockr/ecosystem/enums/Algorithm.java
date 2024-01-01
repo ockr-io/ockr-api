@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Algorithm {
-    SQUARE_PUZZLE("square-puzzle");
+    DEFAULT_PUZZLE("square-puzzle"),
+    PUZZLE_PING_PONG("puzzle-ping-pong");
 
     private final String name;
 

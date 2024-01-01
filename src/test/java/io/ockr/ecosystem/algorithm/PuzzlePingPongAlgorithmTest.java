@@ -3,18 +3,16 @@ package io.ockr.ecosystem.algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import io.ockr.ecosystem.common.Utils;
 import io.ockr.ecosystem.entity.*;
 import io.ockr.ecosystem.entity.api.InferenceResponse;
 import io.ockr.ecosystem.service.ModelService;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -355,16 +353,6 @@ public class PuzzlePingPongAlgorithmTest {
         Assertions.assertEquals(3.0, puzzlePieces.get(2).getError());
     }
 
-    private String loadFileContent(String filePath) throws IOException {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
-            if (inputStream == null) {
-                throw new IOException("Resource not found: " + filePath);
-            }
-            byte[] fileBytes = inputStream.readAllBytes();
-            return new String(fileBytes, StandardCharsets.UTF_8);
-        }
-    }
-
     @Test
     public void example1PuzzleTest() {
         List<TextPosition> textPositions = List.of(
@@ -409,7 +397,7 @@ public class PuzzlePingPongAlgorithmTest {
 
     @Test
     public void calculateTest() throws IOException {
-        String base64Image = loadFileContent("text/example_1.txt");
+        String base64Image = Utils.loadFileContent("text/example_1.txt");
         PuzzlePingPongAlgorithm puzzlePingPongAlgorithm = new PuzzlePingPongAlgorithm(modelService);
         List<TextPosition> textPositions = List.of(
                 TextPosition.builder()

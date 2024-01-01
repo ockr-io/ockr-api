@@ -6,12 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ockr.ecosystem.entity.*;
 import io.ockr.ecosystem.entity.api.InferenceResponse;
 import io.ockr.ecosystem.service.ModelService;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static io.ockr.ecosystem.enums.Algorithm.PUZZLE_PING_PONG;
 
 /**
  * The PuzzlePingPongAlgorithm ensures data correctness by testing the OCR while creating the QR code.
@@ -22,7 +22,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
     private final ModelService modelService;
 
     public PuzzlePingPongAlgorithm(ModelService modelService) {
-        super("puzzle-ping-pong");
+        super(PUZZLE_PING_PONG.getName());
         this.modelService = modelService;
         Parameter maxPuzzlesX = Parameter.builder()
                 .name("maxPuzzlesX")
@@ -73,6 +73,19 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
     private InferenceResponse ping(Model model, String base64Image, String modelVersion, Map<String, Object> parameters) {
         try {
             return modelService.inference(model, base64Image, modelVersion, parameters);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<TextPosition> extractTextPositions(String base64Image) {
+        try {
+
+            return modelService.inference(
+                    this.getStringParameter("modelName"),
+                    base64Image,
+                    this.getStringParameter("modelVersion"),
+                    getModelParameters()).getPrediction();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -139,6 +152,37 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         return textPosition.getWidth() * textPosition.getHeight();
     }
 
+    public boolean verify(List<TextPosition> textPositions, HashResult hashResult) {
+        int maxPuzzlesX = this.getIntegerParameter("maxPuzzlesX");
+        int maxPuzzlesY = this.getIntegerParameter("maxPuzzlesY");
+
+        Puzzle puzzle = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);
+        double gridWidthDifference = Math.abs(puzzle.getGridWidth() - hashResult.getGridWidth());
+        double gridHeightDifference = Math.abs(puzzle.getGridHeight() - hashResult.getGridHeight());
+
+        if (gridHeightDifference + gridWidthDifference > 20) {
+            throw new RuntimeException("The puzzle grid size is too different. The difference is " +
+                    gridWidthDifference + "x" + gridHeightDifference + " pixels.");
+        }
+
+        if (puzzle.getPuzzlePieces().size() != hashResult.getPuzzlePieces().size()) {
+            throw new RuntimeException("The number of puzzle pieces not the same. " +
+                    puzzle.getPuzzlePieces().size() + " != " + hashResult.getPuzzlePieces().size() + " pieces.");
+        }
+
+        boolean puzzleMatch = true;
+        for (int i = 0; i <= puzzle.getPuzzlePieces().size(); i++) {
+            puzzleMatch = puzzle.getPuzzlePieces().get(i).getHash().equals(
+                    hashResult.getPuzzlePieces().get(i).getHash());
+            if (!puzzleMatch) {
+                break;
+            }
+        }
+
+        // Todo: implement a recovery mechanism
+        return puzzleMatch;
+    }
+
     @Override
     public HashResult compute(List<TextPosition> textPositions, String base64Image) {
         Model model = modelService.getModelByName(this.getStringParameter("modelName"));
@@ -148,16 +192,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         }
 
         String modelVersion = this.getStringParameter("modelVersion");
-        String initialModelParameters = this.getStringParameter("initialModelParameters");
-
-        Map<String, Object> parameters = null;
-        if (initialModelParameters != null && !initialModelParameters.equals("{}")) {
-            try {
-                parameters = new ObjectMapper().readValue(initialModelParameters, new TypeReference<>() {});
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        Map<String, Object> parameters = this.getModelParameters();
 
         int maxIterations = this.getIntegerParameter("maxIterations");
         int maxPuzzlesX = this.getIntegerParameter("maxPuzzlesX");
@@ -216,6 +251,19 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         }
 
         return result;
+    }
+
+    private Map<String, Object> getModelParameters() {
+        String initialModelParameters = this.getStringParameter("initialModelParameters");
+        Map<String, Object> parameters = null;
+        if (initialModelParameters != null && !initialModelParameters.equals("{}")) {
+            try {
+                parameters = new ObjectMapper().readValue(initialModelParameters, new TypeReference<>() {});
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return parameters;
     }
 
     private TextPosition findMatch(TextPosition textPosition, List<TextPosition> prediction) {
