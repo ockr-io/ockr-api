@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/ockr-io/ockr-api/compare/v0.3.0...v0.3.1) (2024-01-01)
+
+
+### Features
+
+* add an endpoint to perform a verified ocr on a picture using an ockr qr code ([b42cfd7](https://github.com/ockr-io/ockr-api/commit/b42cfd7ccd3330d6b5d6add37d484c7f8f6eab9b))
+
 ## [0.3.0](https://github.com/ockr-io/ockr-api/compare/v0.2.4...v0.3.0) (2023-12-30)
 
 
