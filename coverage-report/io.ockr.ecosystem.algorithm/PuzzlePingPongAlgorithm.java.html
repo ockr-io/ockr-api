@@ -6,12 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ockr.ecosystem.entity.*;
 import io.ockr.ecosystem.entity.api.InferenceResponse;
 import io.ockr.ecosystem.service.ModelService;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static io.ockr.ecosystem.enums.Algorithm.PUZZLE_PING_PONG;
 
 /**
  * The PuzzlePingPongAlgorithm ensures data correctness by testing the OCR while creating the QR code.
@@ -22,7 +22,7 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
     private final ModelService modelService;
 
     public PuzzlePingPongAlgorithm(ModelService modelService) {
-<span class="fc" id="L25">        super(&quot;puzzle-ping-pong&quot;);</span>
+<span class="fc" id="L25">        super(PUZZLE_PING_PONG.getName());</span>
 <span class="fc" id="L26">        this.modelService = modelService;</span>
 <span class="fc" id="L27">        Parameter maxPuzzlesX = Parameter.builder()</span>
 <span class="fc" id="L28">                .name(&quot;maxPuzzlesX&quot;)</span>
@@ -78,294 +78,342 @@ public class PuzzlePingPongAlgorithm extends Algorithm {
         }
     }
 
+    public List&lt;TextPosition&gt; extractTextPositions(String base64Image) {
+        try {
+
+<span class="nc" id="L84">            return modelService.inference(</span>
+<span class="nc" id="L85">                    this.getStringParameter(&quot;modelName&quot;),</span>
+                    base64Image,
+<span class="nc" id="L87">                    this.getStringParameter(&quot;modelVersion&quot;),</span>
+<span class="nc" id="L88">                    getModelParameters()).getPrediction();</span>
+<span class="nc" id="L89">        } catch (IOException e) {</span>
+<span class="nc" id="L90">            throw new RuntimeException(e);</span>
+        }
+    }
+
     private double overlap(TextPosition a, TextPosition b) {
-<span class="fc" id="L82">        double overlapX = Math.min(a.getX() + a.getWidth(), b.getX() + b.getWidth()) - Math.max(a.getX(), b.getX());</span>
-<span class="fc" id="L83">        double overlapY = Math.min(a.getY() + a.getHeight(), b.getY() + b.getHeight()) - Math.max(a.getY(), b.getY());</span>
-<span class="fc" id="L84">        return overlapX * overlapY;</span>
+<span class="fc" id="L95">        double overlapX = Math.min(a.getX() + a.getWidth(), b.getX() + b.getWidth()) - Math.max(a.getX(), b.getX());</span>
+<span class="fc" id="L96">        double overlapY = Math.min(a.getY() + a.getHeight(), b.getY() + b.getHeight()) - Math.max(a.getY(), b.getY());</span>
+<span class="fc" id="L97">        return overlapX * overlapY;</span>
     }
 
     public double relativeOverlap(TextPosition a, TextPosition b) {
-<span class="fc" id="L88">        return overlap(a, b) / area(a);</span>
+<span class="fc" id="L101">        return overlap(a, b) / area(a);</span>
     }
 
     private int levenshteinDistance(String a, String b) {
-<span class="fc" id="L92">        int aLength = a.length() + 1;</span>
-<span class="fc" id="L93">        int bLength = b.length() + 1;</span>
+<span class="fc" id="L105">        int aLength = a.length() + 1;</span>
+<span class="fc" id="L106">        int bLength = b.length() + 1;</span>
 
-<span class="fc" id="L95">        int[] cost = new int[aLength];</span>
-<span class="fc" id="L96">        int[] update = new int[aLength];</span>
+<span class="fc" id="L108">        int[] cost = new int[aLength];</span>
+<span class="fc" id="L109">        int[] update = new int[aLength];</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = 0; i &lt; aLength; i++) cost[i] = i;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (int i = 0; i &lt; aLength; i++) cost[i] = i;</span>
 
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (int j = 1; j &lt; bLength; j++) {</span>
-<span class="fc" id="L101">            update[0] = j;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        for (int j = 1; j &lt; bLength; j++) {</span>
+<span class="fc" id="L114">            update[0] = j;</span>
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">            for(int i = 1; i &lt; aLength; i++) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">                int match = (a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1;</span>
-<span class="fc" id="L105">                int costReplace = cost[i - 1] + match;</span>
-<span class="fc" id="L106">                int costInsert  = cost[i] + 1;</span>
-<span class="fc" id="L107">                int costDelete  = update[i - 1] + 1;</span>
-<span class="fc" id="L108">                update[i] = Math.min(Math.min(costInsert, costDelete), costReplace);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for(int i = 1; i &lt; aLength; i++) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                int match = (a.charAt(i - 1) == b.charAt(j - 1)) ? 0 : 1;</span>
+<span class="fc" id="L118">                int costReplace = cost[i - 1] + match;</span>
+<span class="fc" id="L119">                int costInsert  = cost[i] + 1;</span>
+<span class="fc" id="L120">                int costDelete  = update[i - 1] + 1;</span>
+<span class="fc" id="L121">                update[i] = Math.min(Math.min(costInsert, costDelete), costReplace);</span>
             }
-<span class="fc" id="L110">            int[] swap = cost; cost = update; update = swap;</span>
+<span class="fc" id="L123">            int[] swap = cost; cost = update; update = swap;</span>
         }
-<span class="fc" id="L112">        return cost[aLength - 1];</span>
+<span class="fc" id="L125">        return cost[aLength - 1];</span>
     }
 
     protected double error(List&lt;TextPosition&gt; inferenceResult, List&lt;TextPosition&gt; groundTruth) {
         // calculate the error between the inference response and the ground truth
-<span class="fc" id="L117">        double error = 0;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (TextPosition textPosition : groundTruth) {</span>
-<span class="fc" id="L119">            TextPosition match = findMatch(textPosition, inferenceResult);</span>
+<span class="fc" id="L130">        double error = 0;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (TextPosition textPosition : groundTruth) {</span>
+<span class="fc" id="L132">            TextPosition match = findMatch(textPosition, inferenceResult);</span>
 
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">            if (match == null) {</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            if (match == null) {</span>
                 // Get full bounding box error if no match is found
-<span class="nc" id="L123">                error += area(textPosition);</span>
+<span class="nc" id="L136">                error += area(textPosition);</span>
                 // Receive a penalty for each character that is not found
-<span class="nc" id="L125">                error += textPosition.getText().length();</span>
+<span class="nc" id="L138">                error += textPosition.getText().length();</span>
             } else {
-<span class="fc" id="L127">                int textLength = textPosition.getText().length();</span>
-<span class="fc" id="L128">                double relativeOverlap = relativeOverlap(match, textPosition);</span>
-<span class="fc" id="L129">                error += (1 - relativeOverlap) * textLength;</span>
-<span class="fc" id="L130">                error += levenshteinDistance(match.getText(), textPosition.getText());</span>
+<span class="fc" id="L140">                int textLength = textPosition.getText().length();</span>
+<span class="fc" id="L141">                double relativeOverlap = relativeOverlap(match, textPosition);</span>
+<span class="fc" id="L142">                error += (1 - relativeOverlap) * textLength;</span>
+<span class="fc" id="L143">                error += levenshteinDistance(match.getText(), textPosition.getText());</span>
             }
-<span class="fc" id="L132">        }</span>
+<span class="fc" id="L145">        }</span>
 
-<span class="fc" id="L134">        return error;</span>
+<span class="fc" id="L147">        return error;</span>
     }
 
 
     private double area(TextPosition textPosition) {
-<span class="fc" id="L139">        return textPosition.getWidth() * textPosition.getHeight();</span>
+<span class="fc" id="L152">        return textPosition.getWidth() * textPosition.getHeight();</span>
+    }
+
+    public boolean verify(List&lt;TextPosition&gt; textPositions, HashResult hashResult) {
+<span class="nc" id="L156">        int maxPuzzlesX = this.getIntegerParameter(&quot;maxPuzzlesX&quot;);</span>
+<span class="nc" id="L157">        int maxPuzzlesY = this.getIntegerParameter(&quot;maxPuzzlesY&quot;);</span>
+
+<span class="nc" id="L159">        Puzzle puzzle = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);</span>
+<span class="nc" id="L160">        double gridWidthDifference = Math.abs(puzzle.getGridWidth() - hashResult.getGridWidth());</span>
+<span class="nc" id="L161">        double gridHeightDifference = Math.abs(puzzle.getGridHeight() - hashResult.getGridHeight());</span>
+
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (gridHeightDifference + gridWidthDifference &gt; 20) {</span>
+<span class="nc" id="L164">            throw new RuntimeException(&quot;The puzzle grid size is too different. The difference is &quot; +</span>
+                    gridWidthDifference + &quot;x&quot; + gridHeightDifference + &quot; pixels.&quot;);
+        }
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        if (puzzle.getPuzzlePieces().size() != hashResult.getPuzzlePieces().size()) {</span>
+<span class="nc" id="L169">            throw new RuntimeException(&quot;The number of puzzle pieces not the same. &quot; +</span>
+<span class="nc" id="L170">                    puzzle.getPuzzlePieces().size() + &quot; != &quot; + hashResult.getPuzzlePieces().size() + &quot; pieces.&quot;);</span>
+        }
+
+<span class="nc" id="L173">        boolean puzzleMatch = true;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        for (int i = 0; i &lt;= puzzle.getPuzzlePieces().size(); i++) {</span>
+<span class="nc" id="L175">            puzzleMatch = puzzle.getPuzzlePieces().get(i).getHash().equals(</span>
+<span class="nc" id="L176">                    hashResult.getPuzzlePieces().get(i).getHash());</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (!puzzleMatch) {</span>
+<span class="nc" id="L178">                break;</span>
+            }
+        }
+
+        // Todo: implement a recovery mechanism
+<span class="nc" id="L183">        return puzzleMatch;</span>
     }
 
     @Override
     public HashResult compute(List&lt;TextPosition&gt; textPositions, String base64Image) {
-<span class="fc" id="L144">        Model model = modelService.getModelByName(this.getStringParameter(&quot;modelName&quot;));</span>
+<span class="fc" id="L188">        Model model = modelService.getModelByName(this.getStringParameter(&quot;modelName&quot;));</span>
 
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">        if (model == null) {</span>
-<span class="nc" id="L147">            throw new IllegalArgumentException(&quot;Model does not exist. Or is not registered.&quot;);</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        if (model == null) {</span>
+<span class="nc" id="L191">            throw new IllegalArgumentException(&quot;Model does not exist. Or is not registered.&quot;);</span>
         }
 
-<span class="fc" id="L150">        String modelVersion = this.getStringParameter(&quot;modelVersion&quot;);</span>
-<span class="fc" id="L151">        String initialModelParameters = this.getStringParameter(&quot;initialModelParameters&quot;);</span>
+<span class="fc" id="L194">        String modelVersion = this.getStringParameter(&quot;modelVersion&quot;);</span>
+<span class="fc" id="L195">        Map&lt;String, Object&gt; parameters = this.getModelParameters();</span>
 
-<span class="fc" id="L153">        Map&lt;String, Object&gt; parameters = null;</span>
-<span class="pc bpc" id="L154" title="2 of 4 branches missed.">        if (initialModelParameters != null &amp;&amp; !initialModelParameters.equals(&quot;{}&quot;)) {</span>
-            try {
-<span class="nc" id="L156">                parameters = new ObjectMapper().readValue(initialModelParameters, new TypeReference&lt;&gt;() {});</span>
-<span class="nc" id="L157">            } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L158">                throw new RuntimeException(e);</span>
-<span class="nc" id="L159">            }</span>
-        }
+<span class="fc" id="L197">        int maxIterations = this.getIntegerParameter(&quot;maxIterations&quot;);</span>
+<span class="fc" id="L198">        int maxPuzzlesX = this.getIntegerParameter(&quot;maxPuzzlesX&quot;);</span>
+<span class="fc" id="L199">        int maxPuzzlesY = this.getIntegerParameter(&quot;maxPuzzlesY&quot;);</span>
+<span class="fc" id="L200">        boolean provideHelp = this.getBooleanParameter(&quot;provideHelp&quot;);</span>
 
-<span class="fc" id="L162">        int maxIterations = this.getIntegerParameter(&quot;maxIterations&quot;);</span>
-<span class="fc" id="L163">        int maxPuzzlesX = this.getIntegerParameter(&quot;maxPuzzlesX&quot;);</span>
-<span class="fc" id="L164">        int maxPuzzlesY = this.getIntegerParameter(&quot;maxPuzzlesY&quot;);</span>
-<span class="fc" id="L165">        boolean provideHelp = this.getBooleanParameter(&quot;provideHelp&quot;);</span>
+<span class="fc" id="L202">        InferenceResponse inferenceResponse = this.ping(model, base64Image, modelVersion, parameters);</span>
 
-<span class="fc" id="L167">        InferenceResponse inferenceResponse = this.ping(model, base64Image, modelVersion, parameters);</span>
+<span class="fc" id="L204">        Puzzle puzzle = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);</span>
+<span class="fc" id="L205">        calculatePuzzleError(puzzle, inferenceResponse.getPrediction());</span>
 
-<span class="fc" id="L169">        Puzzle puzzle = this.createPuzzle(textPositions, maxPuzzlesX, maxPuzzlesY);</span>
-<span class="fc" id="L170">        calculatePuzzleError(puzzle, inferenceResponse.getPrediction());</span>
+<span class="fc" id="L207">        double error = puzzle.getError();</span>
+<span class="fc" id="L208">        parameters = inferenceResponse.getParameters();</span>
 
-<span class="fc" id="L172">        double error = puzzle.getError();</span>
-<span class="fc" id="L173">        parameters = inferenceResponse.getParameters();</span>
+<span class="fc" id="L210">        int iteration = 0;</span>
+<span class="pc bpc" id="L211" title="1 of 4 branches missed.">        while (iteration &lt; maxIterations &amp;&amp; error &gt; 0) {</span>
+<span class="fc" id="L212">            Map&lt;String, Object&gt; newParameters = this.pong(puzzle.getPuzzlePieces(), parameters);</span>
+<span class="fc" id="L213">            inferenceResponse = this.ping(model, base64Image, modelVersion, newParameters);</span>
+<span class="fc" id="L214">            calculatePuzzleError(puzzle, inferenceResponse.getPrediction());</span>
+<span class="fc" id="L215">            double newError = puzzle.getError();</span>
 
-<span class="fc" id="L175">        int iteration = 0;</span>
-<span class="pc bpc" id="L176" title="1 of 4 branches missed.">        while (iteration &lt; maxIterations &amp;&amp; error &gt; 0) {</span>
-<span class="fc" id="L177">            Map&lt;String, Object&gt; newParameters = this.pong(puzzle.getPuzzlePieces(), parameters);</span>
-<span class="fc" id="L178">            inferenceResponse = this.ping(model, base64Image, modelVersion, newParameters);</span>
-<span class="fc" id="L179">            calculatePuzzleError(puzzle, inferenceResponse.getPrediction());</span>
-<span class="fc" id="L180">            double newError = puzzle.getError();</span>
-
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">            if (newError &lt; error) {</span>
-<span class="nc" id="L183">                error = newError;</span>
-<span class="nc" id="L184">                parameters = newParameters;</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">            if (newError &lt; error) {</span>
+<span class="nc" id="L218">                error = newError;</span>
+<span class="nc" id="L219">                parameters = newParameters;</span>
             }
 
-<span class="fc" id="L187">            iteration++;</span>
-<span class="fc" id="L188">        }</span>
+<span class="fc" id="L222">            iteration++;</span>
+<span class="fc" id="L223">        }</span>
 
-<span class="pc bpc" id="L190" title="2 of 4 branches missed.">        if (error &gt; 0 &amp;&amp; provideHelp) {</span>
-<span class="fc" id="L191">            this.provideHelp(puzzle.getPuzzlePieces(), inferenceResponse.getPrediction());</span>
+<span class="pc bpc" id="L225" title="2 of 4 branches missed.">        if (error &gt; 0 &amp;&amp; provideHelp) {</span>
+<span class="fc" id="L226">            this.provideHelp(puzzle.getPuzzlePieces(), inferenceResponse.getPrediction());</span>
         }
 
-<span class="fc" id="L194">        HashResult result = new HashResult();</span>
-<span class="fc" id="L195">        result.setAlgorithm(this.getName());</span>
+<span class="fc" id="L229">        HashResult result = new HashResult();</span>
+<span class="fc" id="L230">        result.setAlgorithm(this.getName());</span>
         try {
-<span class="fc" id="L197">            this.setParameter(&quot;initialModelParameters&quot;, new ObjectMapper().writeValueAsString(parameters));</span>
-<span class="nc" id="L198">        } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L199">            throw new RuntimeException(e);</span>
-<span class="fc" id="L200">        }</span>
-<span class="fc" id="L201">        result.setParameters(this.getParameters());</span>
-<span class="fc" id="L202">        String text = textPositions.stream()</span>
-<span class="fc" id="L203">                .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
-<span class="fc" id="L204">        result.setHash(this.hash(text));</span>
-<span class="fc" id="L205">        result.setPuzzlePieces(puzzle.getPuzzlePieces());</span>
+<span class="fc" id="L232">            this.setParameter(&quot;initialModelParameters&quot;, new ObjectMapper().writeValueAsString(parameters));</span>
+<span class="nc" id="L233">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L234">            throw new RuntimeException(e);</span>
+<span class="fc" id="L235">        }</span>
+<span class="fc" id="L236">        result.setParameters(this.getParameters());</span>
+<span class="fc" id="L237">        String text = textPositions.stream()</span>
+<span class="fc" id="L238">                .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L239">        result.setHash(this.hash(text));</span>
+<span class="fc" id="L240">        result.setPuzzlePieces(puzzle.getPuzzlePieces());</span>
 
-<span class="fc" id="L207">        result.setGridWidth(puzzle.getGridWidth());</span>
-<span class="fc" id="L208">        result.setGridHeight(puzzle.getGridHeight());</span>
-<span class="fc" id="L209">        result.setPuzzleWidth(puzzle.getItemWidth());</span>
-<span class="fc" id="L210">        result.setPuzzleHeight(puzzle.getItemHeight());</span>
+<span class="fc" id="L242">        result.setGridWidth(puzzle.getGridWidth());</span>
+<span class="fc" id="L243">        result.setGridHeight(puzzle.getGridHeight());</span>
+<span class="fc" id="L244">        result.setPuzzleWidth(puzzle.getItemWidth());</span>
+<span class="fc" id="L245">        result.setPuzzleHeight(puzzle.getItemHeight());</span>
 
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (result.toString().length() &gt; MAX_QR_CODE_CHARS) {</span>
-<span class="nc" id="L213">            throw new RuntimeException(&quot;The QR code content is too big. The limit is &quot; +</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">        if (result.toString().length() &gt; MAX_QR_CODE_CHARS) {</span>
+<span class="nc" id="L248">            throw new RuntimeException(&quot;The QR code content is too big. The limit is &quot; +</span>
                     MAX_QR_CODE_CHARS + &quot; characters and the current content has &quot; +
-<span class="nc" id="L215">                    result.toString().length() + &quot; characters.&quot;);</span>
+<span class="nc" id="L250">                    result.toString().length() + &quot; characters.&quot;);</span>
         }
 
-<span class="fc" id="L218">        return result;</span>
+<span class="fc" id="L253">        return result;</span>
+    }
+
+    private Map&lt;String, Object&gt; getModelParameters() {
+<span class="fc" id="L257">        String initialModelParameters = this.getStringParameter(&quot;initialModelParameters&quot;);</span>
+<span class="fc" id="L258">        Map&lt;String, Object&gt; parameters = null;</span>
+<span class="pc bpc" id="L259" title="2 of 4 branches missed.">        if (initialModelParameters != null &amp;&amp; !initialModelParameters.equals(&quot;{}&quot;)) {</span>
+            try {
+<span class="nc" id="L261">                parameters = new ObjectMapper().readValue(initialModelParameters, new TypeReference&lt;&gt;() {});</span>
+<span class="nc" id="L262">            } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L263">                throw new RuntimeException(e);</span>
+<span class="nc" id="L264">            }</span>
+        }
+<span class="fc" id="L266">        return parameters;</span>
     }
 
     private TextPosition findMatch(TextPosition textPosition, List&lt;TextPosition&gt; prediction) {
         // try to find matches near the bounding box position
-<span class="fc" id="L223">        double tolerance = 64;</span>
-<span class="fc" id="L224">        List&lt;TextPosition&gt; matches = prediction.stream()</span>
-<span class="fc bfc" id="L225" title="All 4 branches covered.">                .filter(result -&gt; result.getX() &gt;= textPosition.getX() - tolerance &amp;&amp; result.getX() &lt;= textPosition.getX() + tolerance)</span>
-<span class="fc bfc" id="L226" title="All 4 branches covered.">                .filter(result -&gt; result.getY() &gt;= textPosition.getY() - tolerance &amp;&amp; result.getY() &lt;= textPosition.getY() + tolerance)</span>
-<span class="fc" id="L227">                .toList();</span>
+<span class="fc" id="L271">        double tolerance = 64;</span>
+<span class="fc" id="L272">        List&lt;TextPosition&gt; matches = prediction.stream()</span>
+<span class="fc bfc" id="L273" title="All 4 branches covered.">                .filter(result -&gt; result.getX() &gt;= textPosition.getX() - tolerance &amp;&amp; result.getX() &lt;= textPosition.getX() + tolerance)</span>
+<span class="fc bfc" id="L274" title="All 4 branches covered.">                .filter(result -&gt; result.getY() &gt;= textPosition.getY() - tolerance &amp;&amp; result.getY() &lt;= textPosition.getY() + tolerance)</span>
+<span class="fc" id="L275">                .toList();</span>
 
-<span class="fc" id="L229">        TextPosition match = null;</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">        if (matches.size() &gt; 1) {</span>
+<span class="fc" id="L277">        TextPosition match = null;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (matches.size() &gt; 1) {</span>
             // find the best match by calculating the distance between the bounding box
-<span class="fc" id="L232">            double overlap = 0;</span>
-<span class="fc" id="L233">            TextPosition possibleMatch = null;</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">            for (TextPosition option : matches) {</span>
-<span class="fc" id="L235">                double optionOverlap = overlap(option, textPosition);</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">                if (optionOverlap &gt; overlap) {</span>
-<span class="fc" id="L237">                    overlap = optionOverlap;</span>
-<span class="fc" id="L238">                    possibleMatch = option;</span>
+<span class="fc" id="L280">            double overlap = 0;</span>
+<span class="fc" id="L281">            TextPosition possibleMatch = null;</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">            for (TextPosition option : matches) {</span>
+<span class="fc" id="L283">                double optionOverlap = overlap(option, textPosition);</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (optionOverlap &gt; overlap) {</span>
+<span class="fc" id="L285">                    overlap = optionOverlap;</span>
+<span class="fc" id="L286">                    possibleMatch = option;</span>
                 }
-<span class="fc" id="L240">            }</span>
-<span class="fc" id="L241">            match = possibleMatch;</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        } else if (matches.size() == 1) {</span>
+<span class="fc" id="L288">            }</span>
+<span class="fc" id="L289">            match = possibleMatch;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        } else if (matches.size() == 1) {</span>
             // check if the match is within the bounding box
-<span class="fc" id="L244">            double overlap = overlap(matches.get(0), textPosition);</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if (overlap &gt; 0) {</span>
-<span class="fc" id="L246">                match = matches.get(0);</span>
+<span class="fc" id="L292">            double overlap = overlap(matches.get(0), textPosition);</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">            if (overlap &gt; 0) {</span>
+<span class="fc" id="L294">                match = matches.get(0);</span>
             }
         }
-<span class="fc" id="L249">        return match;</span>
+<span class="fc" id="L297">        return match;</span>
     }
 
     protected void provideHelp(List&lt;PuzzlePiece&gt; puzzlePieces, List&lt;TextPosition&gt; prediction) {
-<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (puzzlePiece.getError() &gt; 0) {</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">                for (TextPosition textPosition : puzzlePiece.getTextPositions()) {</span>
-<span class="fc" id="L256">                    TextPosition match = findMatch(textPosition, prediction);</span>
-<span class="fc" id="L257">                    double distance = 0.0;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">            if (puzzlePiece.getError() &gt; 0) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">                for (TextPosition textPosition : puzzlePiece.getTextPositions()) {</span>
+<span class="fc" id="L304">                    TextPosition match = findMatch(textPosition, prediction);</span>
+<span class="fc" id="L305">                    double distance = 0.0;</span>
 
-<span class="pc bpc" id="L259" title="1 of 2 branches missed.">                    if (match != null) {</span>
-<span class="fc" id="L260">                        distance = levenshteinDistance(textPosition.getText(), match.getText());</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">                    if (match != null) {</span>
+<span class="fc" id="L308">                        distance = levenshteinDistance(textPosition.getText(), match.getText());</span>
                     }
 
-<span class="fc bfc" id="L263" title="All 2 branches covered.">                    if (distance &gt; 0) {</span>
-<span class="fc" id="L264">                        double distanceThreshold =  textPosition.getText().length() / 4.0;</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">                        if (distance &gt; distanceThreshold) {</span>
-<span class="fc" id="L266">                                puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
-<span class="fc" id="L267">                                        .text(textPosition.getText())</span>
-<span class="fc" id="L268">                                        .prediction(match.getText())</span>
-<span class="fc" id="L269">                                        .start(0)</span>
-<span class="fc" id="L270">                                        .end(textPosition.getText().length() - 1)</span>
-<span class="fc" id="L271">                                        .build());</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">                    if (distance &gt; 0) {</span>
+<span class="fc" id="L312">                        double distanceThreshold =  textPosition.getText().length() / 4.0;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">                        if (distance &gt; distanceThreshold) {</span>
+<span class="fc" id="L314">                                puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
+<span class="fc" id="L315">                                        .text(textPosition.getText())</span>
+<span class="fc" id="L316">                                        .prediction(match.getText())</span>
+<span class="fc" id="L317">                                        .start(0)</span>
+<span class="fc" id="L318">                                        .end(textPosition.getText().length() - 1)</span>
+<span class="fc" id="L319">                                        .build());</span>
                         } else {
                             // find differences in the text
-<span class="fc" id="L274">                            int start = 0;</span>
-<span class="fc" id="L275">                            int end = 0;</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">                            for (int i = 0; i &lt; textPosition.getText().length(); i++) {</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">                                if (textPosition.getText().charAt(i) != match.getText().charAt(i)) {</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">                                    if (start == 0) {</span>
-<span class="fc" id="L279">                                        start = i;</span>
+<span class="fc" id="L322">                            int start = 0;</span>
+<span class="fc" id="L323">                            int end = 0;</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">                            for (int i = 0; i &lt; textPosition.getText().length(); i++) {</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                                if (textPosition.getText().charAt(i) != match.getText().charAt(i)) {</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">                                    if (start == 0) {</span>
+<span class="fc" id="L327">                                        start = i;</span>
                                     }
-<span class="fc" id="L281">                                    end = i;</span>
+<span class="fc" id="L329">                                    end = i;</span>
 
-<span class="fc bfc" id="L283" title="All 2 branches covered.">                                    if (i == textPosition.getText().length() - 1) {</span>
-<span class="fc" id="L284">                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
-<span class="fc" id="L285">                                                .text(textPosition.getText().substring(start, end + 1))</span>
-<span class="fc" id="L286">                                                .prediction(match.getText().substring(start, end + 1))</span>
-<span class="fc" id="L287">                                                .start(start)</span>
-<span class="fc" id="L288">                                                .end(end)</span>
-<span class="fc" id="L289">                                                .build());</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">                                    if (i == textPosition.getText().length() - 1) {</span>
+<span class="fc" id="L332">                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
+<span class="fc" id="L333">                                                .text(textPosition.getText().substring(start, end + 1))</span>
+<span class="fc" id="L334">                                                .prediction(match.getText().substring(start, end + 1))</span>
+<span class="fc" id="L335">                                                .start(start)</span>
+<span class="fc" id="L336">                                                .end(end)</span>
+<span class="fc" id="L337">                                                .build());</span>
                                     }
 
                                 } else {
-<span class="fc bfc" id="L293" title="All 2 branches covered.">                                    if (start != 0) {</span>
-<span class="fc" id="L294">                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
-<span class="fc" id="L295">                                                .text(textPosition.getText().substring(start, end + 1))</span>
-<span class="fc" id="L296">                                                .prediction(match.getText().substring(start, end + 1))</span>
-<span class="fc" id="L297">                                                .start(start)</span>
-<span class="fc" id="L298">                                                .end(end)</span>
-<span class="fc" id="L299">                                                .build());</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">                                    if (start != 0) {</span>
+<span class="fc" id="L342">                                        puzzlePiece.getHelper().add(TextPositionHelper.builder()</span>
+<span class="fc" id="L343">                                                .text(textPosition.getText().substring(start, end + 1))</span>
+<span class="fc" id="L344">                                                .prediction(match.getText().substring(start, end + 1))</span>
+<span class="fc" id="L345">                                                .start(start)</span>
+<span class="fc" id="L346">                                                .end(end)</span>
+<span class="fc" id="L347">                                                .build());</span>
 
-<span class="fc" id="L301">                                        start = 0;</span>
-<span class="fc" id="L302">                                        end = 0;</span>
+<span class="fc" id="L349">                                        start = 0;</span>
+<span class="fc" id="L350">                                        end = 0;</span>
                                     }
                                 }
                             }
                         }
                     }
-<span class="fc" id="L308">                }</span>
+<span class="fc" id="L356">                }</span>
             }
-<span class="fc" id="L310">        }</span>
-<span class="fc" id="L311">    }</span>
+<span class="fc" id="L358">        }</span>
+<span class="fc" id="L359">    }</span>
 
     protected void calculatePuzzleError(Puzzle puzzle, List&lt;TextPosition&gt; prediction) {
-<span class="fc" id="L314">        List&lt;PuzzlePiece&gt; puzzlePieces = puzzle.getPuzzlePieces();</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
-<span class="fc" id="L316">            double puzzlePieceX = puzzlePiece.getX() * puzzle.getItemWidth();</span>
-<span class="fc" id="L317">            double puzzlePieceY = puzzlePiece.getY() * puzzle.getItemHeight();</span>
-<span class="fc" id="L318">            List&lt;TextPosition&gt; predictionUnderPuzzlePiece = prediction.stream()</span>
-<span class="pc bpc" id="L319" title="1 of 2 branches missed.">                    .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePieceX &amp;&amp;</span>
-<span class="pc bpc" id="L320" title="1 of 2 branches missed.">                            textPosition.getX() &lt;= puzzlePieceX + puzzlePiece.getWidth() &amp;&amp;</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">                            textPosition.getY() &gt;= puzzlePieceY &amp;&amp;</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">                            textPosition.getY() &lt;= puzzlePieceY + puzzlePiece.getHeight())</span>
-<span class="fc" id="L323">                    .toList();</span>
+<span class="fc" id="L362">        List&lt;PuzzlePiece&gt; puzzlePieces = puzzle.getPuzzlePieces();</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (PuzzlePiece puzzlePiece : puzzlePieces) {</span>
+<span class="fc" id="L364">            double puzzlePieceX = puzzlePiece.getX() * puzzle.getItemWidth();</span>
+<span class="fc" id="L365">            double puzzlePieceY = puzzlePiece.getY() * puzzle.getItemHeight();</span>
+<span class="fc" id="L366">            List&lt;TextPosition&gt; predictionUnderPuzzlePiece = prediction.stream()</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">                    .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePieceX &amp;&amp;</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">                            textPosition.getX() &lt;= puzzlePieceX + puzzlePiece.getWidth() &amp;&amp;</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">                            textPosition.getY() &gt;= puzzlePieceY &amp;&amp;</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">                            textPosition.getY() &lt;= puzzlePieceY + puzzlePiece.getHeight())</span>
+<span class="fc" id="L371">                    .toList();</span>
 
-<span class="fc" id="L325">            List&lt;TextPosition&gt; puzzlePieceTextPositions = puzzlePiece.getTextPositions();</span>
-<span class="fc" id="L326">            List&lt;Integer&gt; matches = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L373">            List&lt;TextPosition&gt; puzzlePieceTextPositions = puzzlePiece.getTextPositions();</span>
+<span class="fc" id="L374">            List&lt;Integer&gt; matches = new ArrayList&lt;&gt;();</span>
 
             // find matches and calculate error
-<span class="fc bfc" id="L329" title="All 2 branches covered.">            for (TextPosition textPosition : puzzlePieceTextPositions) {</span>
-<span class="fc" id="L330">                TextPosition match = findMatch(textPosition, predictionUnderPuzzlePiece);</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">                if (match == null) {</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">            for (TextPosition textPosition : puzzlePieceTextPositions) {</span>
+<span class="fc" id="L378">                TextPosition match = findMatch(textPosition, predictionUnderPuzzlePiece);</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">                if (match == null) {</span>
                     // Get full bounding box error if no match is found
-<span class="fc" id="L333">                    puzzlePiece.setError(puzzlePiece.getError() + area(textPosition));</span>
+<span class="fc" id="L381">                    puzzlePiece.setError(puzzlePiece.getError() + area(textPosition));</span>
                 } else {
-<span class="fc" id="L335">                    double relativeOverlap = relativeOverlap(match, textPosition);</span>
-<span class="fc" id="L336">                    puzzlePiece.setError(puzzlePiece.getError() + (1 - relativeOverlap) * textPosition.getText().length());</span>
-<span class="fc" id="L337">                    puzzlePiece.setError(puzzlePiece.getError() + levenshteinDistance(match.getText(), textPosition.getText()));</span>
-<span class="fc" id="L338">                    matches.add(predictionUnderPuzzlePiece.indexOf(match));</span>
+<span class="fc" id="L383">                    double relativeOverlap = relativeOverlap(match, textPosition);</span>
+<span class="fc" id="L384">                    puzzlePiece.setError(puzzlePiece.getError() + (1 - relativeOverlap) * textPosition.getText().length());</span>
+<span class="fc" id="L385">                    puzzlePiece.setError(puzzlePiece.getError() + levenshteinDistance(match.getText(), textPosition.getText()));</span>
+<span class="fc" id="L386">                    matches.add(predictionUnderPuzzlePiece.indexOf(match));</span>
                 }
-<span class="fc" id="L340">            }</span>
+<span class="fc" id="L388">            }</span>
 
             // add error for all remaining text positions
-<span class="fc bfc" id="L343" title="All 2 branches covered.">            for (int i= 0; i &lt; predictionUnderPuzzlePiece.size(); i++) {</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">                if (!matches.contains(i)) {</span>
-<span class="fc" id="L345">                    puzzlePiece.setError(puzzlePiece.getError() + area(predictionUnderPuzzlePiece.get(i)));</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">            for (int i= 0; i &lt; predictionUnderPuzzlePiece.size(); i++) {</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">                if (!matches.contains(i)) {</span>
+<span class="fc" id="L393">                    puzzlePiece.setError(puzzlePiece.getError() + area(predictionUnderPuzzlePiece.get(i)));</span>
                 }
             }
-<span class="fc" id="L348">        }</span>
-<span class="fc" id="L349">    }</span>
+<span class="fc" id="L396">        }</span>
+<span class="fc" id="L397">    }</span>
 
     private Map&lt;String, Object&gt; pong(List&lt;PuzzlePiece&gt; puzzlePieces, Map&lt;String, Object&gt; parameters) {
-<span class="fc" id="L352">        Map&lt;String, Object&gt; newParameters = new java.util.HashMap&lt;&gt;(Map.copyOf(parameters));</span>
-<span class="fc" id="L353">        List&lt;String&gt; parameterNames = parameters.keySet().stream().toList();</span>
+<span class="fc" id="L400">        Map&lt;String, Object&gt; newParameters = new java.util.HashMap&lt;&gt;(Map.copyOf(parameters));</span>
+<span class="fc" id="L401">        List&lt;String&gt; parameterNames = parameters.keySet().stream().toList();</span>
 
-<span class="pc bpc" id="L355" title="1 of 2 branches missed.">        if (parameterNames.size() &gt; 0) {</span>
-<span class="fc" id="L356">            Object parameter = newParameters.get(parameterNames.get(0));</span>
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">            if (parameter instanceof Integer) {</span>
-<span class="nc" id="L358">                int value = (int) parameter;</span>
-<span class="nc bnc" id="L359" title="All 2 branches missed.">                value += Math.random() &gt; 0.5 ? 1 : -1;</span>
-<span class="nc" id="L360">                newParameters.replace(parameterNames.get(0), value);</span>
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">            } else if (parameter instanceof Double) {</span>
-<span class="fc" id="L362">                double value = (double) parameter;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">                value += Math.random() &gt; 0.5 ? 0.1 : -0.1;</span>
-<span class="fc" id="L364">                newParameters.replace(parameterNames.get(0), value);</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">        if (parameterNames.size() &gt; 0) {</span>
+<span class="fc" id="L404">            Object parameter = newParameters.get(parameterNames.get(0));</span>
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">            if (parameter instanceof Integer) {</span>
+<span class="fc" id="L406">                int value = (int) parameter;</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">                value += Math.random() &gt; 0.5 ? 1 : -1;</span>
+<span class="fc" id="L408">                newParameters.replace(parameterNames.get(0), value);</span>
+<span class="pc bnc" id="L409" title="All 2 branches missed.">            } else if (parameter instanceof Double) {</span>
+<span class="nc" id="L410">                double value = (double) parameter;</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">                value += Math.random() &gt; 0.5 ? 0.1 : -0.1;</span>
+<span class="nc" id="L412">                newParameters.replace(parameterNames.get(0), value);</span>
             }
         }
 
-<span class="fc" id="L368">        return newParameters;</span>
+<span class="fc" id="L416">        return newParameters;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

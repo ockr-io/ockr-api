@@ -6,87 +6,89 @@ import io.ockr.ecosystem.entity.TextPosition;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.ockr.ecosystem.enums.Algorithm.DEFAULT_PUZZLE;
+
 public class DefaultPuzzleAlgorithm extends Algorithm {
 
     public DefaultPuzzleAlgorithm() {
-<span class="fc" id="L12">        super(&quot;default-puzzle&quot;);</span>
-<span class="fc" id="L13">        Parameter xSlice = Parameter.builder()</span>
-<span class="fc" id="L14">                .name(&quot;xSlice&quot;)</span>
-<span class="fc" id="L15">                .type(ParameterType.INTEGER)</span>
-<span class="fc" id="L16">                .description(&quot;The number of slices in the x direction&quot;)</span>
-<span class="fc" id="L17">                .defaultValue(&quot;3&quot;)</span>
-<span class="fc" id="L18">                .build();</span>
-<span class="fc" id="L19">        Parameter ySlice = Parameter.builder()</span>
-<span class="fc" id="L20">                .name(&quot;ySlice&quot;)</span>
-<span class="fc" id="L21">                .type(ParameterType.INTEGER)</span>
-<span class="fc" id="L22">                .description(&quot;The number of slices in the y direction&quot;)</span>
-<span class="fc" id="L23">                .defaultValue(&quot;3&quot;)</span>
-<span class="fc" id="L24">                .build();</span>
-<span class="fc" id="L25">        this.parameters.addAll(List.of(xSlice, ySlice));</span>
-<span class="fc" id="L26">    }</span>
+<span class="fc" id="L14">        super(DEFAULT_PUZZLE.getName());</span>
+<span class="fc" id="L15">        Parameter xSlice = Parameter.builder()</span>
+<span class="fc" id="L16">                .name(&quot;xSlice&quot;)</span>
+<span class="fc" id="L17">                .type(ParameterType.INTEGER)</span>
+<span class="fc" id="L18">                .description(&quot;The number of slices in the x direction&quot;)</span>
+<span class="fc" id="L19">                .defaultValue(&quot;3&quot;)</span>
+<span class="fc" id="L20">                .build();</span>
+<span class="fc" id="L21">        Parameter ySlice = Parameter.builder()</span>
+<span class="fc" id="L22">                .name(&quot;ySlice&quot;)</span>
+<span class="fc" id="L23">                .type(ParameterType.INTEGER)</span>
+<span class="fc" id="L24">                .description(&quot;The number of slices in the y direction&quot;)</span>
+<span class="fc" id="L25">                .defaultValue(&quot;3&quot;)</span>
+<span class="fc" id="L26">                .build();</span>
+<span class="fc" id="L27">        this.parameters.addAll(List.of(xSlice, ySlice));</span>
+<span class="fc" id="L28">    }</span>
 
     @Override
     protected double error(List&lt;TextPosition&gt; inferenceResult, List&lt;TextPosition&gt; groundTruth) {
-<span class="nc" id="L30">        return 0;</span>
+<span class="nc" id="L32">        return 0;</span>
     }
 
     @Override
     public HashResult compute(List&lt;TextPosition&gt; textPositions, String base64Image) {
-<span class="fc" id="L35">        int sliceX = getIntegerParameter(&quot;xSlice&quot;);</span>
-<span class="fc" id="L36">        int sliceY = getIntegerParameter(&quot;ySlice&quot;);</span>
-<span class="fc" id="L37">        double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);</span>
-<span class="fc" id="L38">        double maxX = textPositions.stream().mapToDouble(TextPosition::getX).max().orElse(0);</span>
-<span class="fc" id="L39">        double minY = textPositions.stream().mapToDouble(TextPosition::getY).min().orElse(0);</span>
-<span class="fc" id="L40">        double maxY = textPositions.stream().mapToDouble(TextPosition::getY).max().orElse(0);</span>
-<span class="fc" id="L41">        double areaWidth = maxX - minX;</span>
-<span class="fc" id="L42">        double areaHeight = maxY - minY;</span>
-<span class="fc" id="L43">        double sliceWidth = areaWidth / sliceX;</span>
-<span class="fc" id="L44">        double sliceHeight = areaHeight / sliceY;</span>
+<span class="fc" id="L37">        int sliceX = getIntegerParameter(&quot;xSlice&quot;);</span>
+<span class="fc" id="L38">        int sliceY = getIntegerParameter(&quot;ySlice&quot;);</span>
+<span class="fc" id="L39">        double minX = textPositions.stream().mapToDouble(TextPosition::getX).min().orElse(0);</span>
+<span class="fc" id="L40">        double maxX = textPositions.stream().mapToDouble(TextPosition::getX).max().orElse(0);</span>
+<span class="fc" id="L41">        double minY = textPositions.stream().mapToDouble(TextPosition::getY).min().orElse(0);</span>
+<span class="fc" id="L42">        double maxY = textPositions.stream().mapToDouble(TextPosition::getY).max().orElse(0);</span>
+<span class="fc" id="L43">        double areaWidth = maxX - minX;</span>
+<span class="fc" id="L44">        double areaHeight = maxY - minY;</span>
+<span class="fc" id="L45">        double sliceWidth = areaWidth / sliceX;</span>
+<span class="fc" id="L46">        double sliceHeight = areaHeight / sliceY;</span>
 
-<span class="fc" id="L46">        HashResult result = new HashResult();</span>
-<span class="fc" id="L47">        result.setAlgorithm(this.getName());</span>
-<span class="fc" id="L48">        result.setParameters(this.getParameters());</span>
-<span class="fc" id="L49">        String text = textPositions.stream()</span>
-<span class="fc" id="L50">                .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
-<span class="fc" id="L51">        result.setHash(this.hash(text));</span>
+<span class="fc" id="L48">        HashResult result = new HashResult();</span>
+<span class="fc" id="L49">        result.setAlgorithm(this.getName());</span>
+<span class="fc" id="L50">        result.setParameters(this.getParameters());</span>
+<span class="fc" id="L51">        String text = textPositions.stream()</span>
+<span class="fc" id="L52">                .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L53">        result.setHash(this.hash(text));</span>
 
-<span class="fc" id="L53">        List&lt;PuzzlePiece&gt; puzzlePieces = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L55">        List&lt;PuzzlePiece&gt; puzzlePieces = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int i = 0; i &lt; sliceX; i++) {</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">            for (int j =0; j &lt; sliceY; j++) {</span>
-<span class="fc" id="L57">                double puzzlePositionX = i * sliceWidth;</span>
-<span class="fc" id="L58">                double puzzlePositionY = j * sliceHeight;</span>
-<span class="fc" id="L59">                List&lt;TextPosition&gt; textUnderPuzzleArea = textPositions.stream()</span>
-<span class="fc bfc" id="L60" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePositionX &amp;&amp; textPosition.getX() &lt;= puzzlePositionX + sliceWidth)</span>
-<span class="fc bfc" id="L61" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getY() &gt;= puzzlePositionY &amp;&amp; textPosition.getY() &lt;= puzzlePositionY + sliceHeight)</span>
-<span class="fc" id="L62">                        .toList();</span>
-<span class="fc" id="L63">                String puzzleText = textUnderPuzzleArea.stream()</span>
-<span class="fc" id="L64">                        .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
-<span class="fc" id="L65">                puzzlePieces.add(PuzzlePiece.builder()</span>
-<span class="fc" id="L66">                        .textPositions(textUnderPuzzleArea)</span>
-<span class="fc" id="L67">                        .hash(this.hash(puzzleText))</span>
-<span class="fc" id="L68">                        .x(i)</span>
-<span class="fc" id="L69">                        .y(j)</span>
-<span class="fc" id="L70">                        .width(sliceWidth)</span>
-<span class="fc" id="L71">                        .height(sliceHeight)</span>
-<span class="fc" id="L72">                        .build());</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 0; i &lt; sliceX; i++) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int j =0; j &lt; sliceY; j++) {</span>
+<span class="fc" id="L59">                double puzzlePositionX = i * sliceWidth;</span>
+<span class="fc" id="L60">                double puzzlePositionY = j * sliceHeight;</span>
+<span class="fc" id="L61">                List&lt;TextPosition&gt; textUnderPuzzleArea = textPositions.stream()</span>
+<span class="fc bfc" id="L62" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getX() &gt;= puzzlePositionX &amp;&amp; textPosition.getX() &lt;= puzzlePositionX + sliceWidth)</span>
+<span class="fc bfc" id="L63" title="All 4 branches covered.">                        .filter(textPosition -&gt; textPosition.getY() &gt;= puzzlePositionY &amp;&amp; textPosition.getY() &lt;= puzzlePositionY + sliceHeight)</span>
+<span class="fc" id="L64">                        .toList();</span>
+<span class="fc" id="L65">                String puzzleText = textUnderPuzzleArea.stream()</span>
+<span class="fc" id="L66">                        .reduce(&quot;&quot;, (s, textPosition) -&gt; s + textPosition.getText(), String::concat);</span>
+<span class="fc" id="L67">                puzzlePieces.add(PuzzlePiece.builder()</span>
+<span class="fc" id="L68">                        .textPositions(textUnderPuzzleArea)</span>
+<span class="fc" id="L69">                        .hash(this.hash(puzzleText))</span>
+<span class="fc" id="L70">                        .x(i)</span>
+<span class="fc" id="L71">                        .y(j)</span>
+<span class="fc" id="L72">                        .width(sliceWidth)</span>
+<span class="fc" id="L73">                        .height(sliceHeight)</span>
+<span class="fc" id="L74">                        .build());</span>
             }
         }
 
-<span class="fc" id="L76">        result.setPuzzlePieces(puzzlePieces);</span>
+<span class="fc" id="L78">        result.setPuzzlePieces(puzzlePieces);</span>
 
-<span class="fc" id="L78">        result.setGridWidth(areaWidth);</span>
-<span class="fc" id="L79">        result.setGridHeight(areaHeight);</span>
-<span class="fc" id="L80">        result.setPuzzleWidth(sliceWidth);</span>
-<span class="fc" id="L81">        result.setPuzzleHeight(sliceHeight);</span>
+<span class="fc" id="L80">        result.setGridWidth(areaWidth);</span>
+<span class="fc" id="L81">        result.setGridHeight(areaHeight);</span>
+<span class="fc" id="L82">        result.setPuzzleWidth(sliceWidth);</span>
+<span class="fc" id="L83">        result.setPuzzleHeight(sliceHeight);</span>
 
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (result.toString().length() &gt; MAX_QR_CODE_CHARS) {</span>
-<span class="nc" id="L84">            throw new RuntimeException(&quot;The QR code content is too big. The limit is &quot; +</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (result.toString().length() &gt; MAX_QR_CODE_CHARS) {</span>
+<span class="nc" id="L86">            throw new RuntimeException(&quot;The QR code content is too big. The limit is &quot; +</span>
                     MAX_QR_CODE_CHARS + &quot; characters and the current content has &quot; +
-<span class="nc" id="L86">                    result.toString().length() + &quot; characters.&quot;);</span>
+<span class="nc" id="L88">                    result.toString().length() + &quot; characters.&quot;);</span>
         }
 
-<span class="fc" id="L89">        return result;</span>
+<span class="fc" id="L91">        return result;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

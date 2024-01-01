@@ -2,14 +2,15 @@
 
 import lombok.Getter;
 
-<span class="nc" id="L5">@Getter</span>
+<span class="fc" id="L5">@Getter</span>
 public enum Algorithm {
-<span class="nc" id="L7">    SQUARE_PUZZLE(&quot;square-puzzle&quot;);</span>
+<span class="fc" id="L7">    DEFAULT_PUZZLE(&quot;square-puzzle&quot;),</span>
+<span class="fc" id="L8">    PUZZLE_PING_PONG(&quot;puzzle-ping-pong&quot;);</span>
 
-<span class="nc" id="L9">    private final String name;</span>
+<span class="fc" id="L10">    private final String name;</span>
 
-<span class="nc" id="L11">    Algorithm(String name) {</span>
-<span class="nc" id="L12">        this.name = name;</span>
-<span class="nc" id="L13">    }</span>
+<span class="fc" id="L12">    Algorithm(String name) {</span>
+<span class="fc" id="L13">        this.name = name;</span>
+<span class="fc" id="L14">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
