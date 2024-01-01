@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/ockr-io/ockr-api/compare/v0.2.4...v0.3.0) (2023-12-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* introduce puzzle abstraction to forward knowledge about the initial total puzzle grid
+
+### Features
+
+* introduce puzzle abstraction to forward knowledge about the initial total puzzle grid ([80b2cf8](https://github.com/ockr-io/ockr-api/commit/80b2cf849eca1c622c2d8446fbf3a7d8a96a8e78))
+
 ## [0.2.4](https://github.com/ockr-io/ockr-api/compare/v0.2.3...v0.2.4) (2023-12-29)
 
 
